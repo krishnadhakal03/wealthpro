@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-w_anj&11r^lm5@sltv*t6q(&im7kch!uj*p4*v-0xd5j^61csc
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['wealthpro.onrender.com', 'localhost', '127.0.0.1']
 
 
 # Application definition
@@ -147,6 +147,21 @@ import os
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+
+# Ensure this is set to true in production
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True  # Make sure session cookies are secure as well
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://wealthpro.onrender.com',
+]
+
+# If you're running locally and encountering this issue, set this to False temporarily
+CSRF_COOKIE_HTTPONLY = True  # Only make the CSRF cookie accessible via HTTP requests
+
+# Ensure CSRF token is included in requests
+CSRF_USE_SESSIONS = True
 
 
 
