@@ -18,11 +18,13 @@
 <body {% block hclass %}
     {% endblock %} >
     <!-- Header -->
-    <header class="main-header">
-        <div class="container">
-            <h1>Next Generation Wealth Pro</h1>
+   <header class="main-header">
+    <div class="container">
+        <h1>Next Generation Wealth Pro</h1>
+        <div class="menu">
             <nav>
-                <ul>
+                <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+                <ul id="menu-items" class="menu-items">
                     <li><a href="{% url 'home' %}">Home</a></li>
                     <li><a href="{% url 'team' %}">Team</a></li>
                     <li><a href="{% url 'services' %}">Services</a></li>
@@ -32,7 +34,8 @@
                 </ul>
             </nav>
         </div>
-    </header>
+    </div>
+</header>
     <div id="content", name="content">
      {% block content %}
     {% endblock %}
