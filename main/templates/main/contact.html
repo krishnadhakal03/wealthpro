@@ -1,0 +1,56 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% block title %}
+    Contact
+{% endblock %}
+
+{% block content %}
+  <!-- Contact Form Section -->
+<section class="contact-form">
+    <div class="container">
+        <div class="contact-info">
+            <h2>Next Generation Wealth Pro</h2>
+            <ul>
+                <li><strong>Address:</strong> 1234 Business St, Suite 567, City, State, ZIP</li>
+                <li><strong>Phone:</strong> (123) 456-7890</li>
+                <li><strong>Email:</strong> info@nextgenwealthpro.com</li>
+            </ul>
+        </div>
+
+        <div class="contact-form-container">
+            <h2 class="section-title">Get In Touch</h2>
+            <form action="{% url 'contact' %}" method="POST" class="contact-form-container">
+                {% csrf_token %}
+                <input type="text" name="name" placeholder="Your Name" required>
+                <input type="tel" name="phone" placeholder="Your Phone Number" required>
+                <input type="email" name="email" placeholder="Your Email" required>
+                <textarea name="address" placeholder="Your Address" required></textarea>
+                <textarea name="reason" placeholder="Reason for Contact" required></textarea>
+                <button type="submit">Send Message</button>
+            </form>
+        </div>
+    </div>
+</section>
+
+<!-- OpenStreetMap for Virginia -->
+<section class="map">
+    <iframe src="https://www.openstreetmap.org/export/embed.html?bbox=-84.3225%2C36.5400%2C-75.2398%2C39.4662&layer=mapnik" width="100%" height="400" frameborder="0" style="border: 1px solid black"></iframe>
+</section>
+
+<!-- Success Message Modal -->
+{% if success %}
+  <div id="successModal" class="modal" style="display: block;">
+      <div class="modal-content">
+          <h3>Email Sent</h3>
+          <p>Thank you for contacting us. We will get back to you soon!</p>
+          <button onclick="closeModal()">Close</button>
+      </div>
+  </div>
+  <script>
+      function closeModal() {
+          document.getElementById('successModal').style.display = 'none';
+      }
+  </script>
+{% endif %}
+
+{% endblock %}

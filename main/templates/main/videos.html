@@ -1,0 +1,35 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% block title %}
+    Videos
+{% endblock %}
+
+ {% block content %}
+    <!-- Video Upload Section -->
+    <section class="video-upload">
+        <div class="container">
+            <h2 class="section-title">Upload a Video</h2>
+            <div class="upload-container">
+                <input type="file" id="videoFile" accept="video/*">
+                <button onclick="uploadVideo()">Upload</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Video Gallery Section -->
+    <section class="video-gallery">
+        <div class="container">
+            <h2 class="section-title">Our Video Gallery</h2>
+            {% for video in vid %}
+            <div class="video">
+                <iframe width="560" height="315" src="{{ video.url}}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                <p>{{ video.title}}</p>
+            </div>
+            {% empty %}
+            <p>No videos available.</p>
+        {% endfor %}
+            <!-- Repeat for additional videos -->
+        </div>	
+    </section>
+
+{% endblock %}

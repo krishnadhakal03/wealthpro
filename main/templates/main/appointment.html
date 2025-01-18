@@ -1,0 +1,28 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% block title %}
+    Appointment
+{% endblock %}
+
+ {% block content %}
+
+    <!-- Appointment Section -->
+    <section class="appointment">
+        <div class="container">
+            <h2 class="section-title">Book an Appointment</h2>
+            <div class="appointment-form-container">
+                <!-- Appointment Form -->
+                <form id="appointmentForm" class="appointment-form">
+                    <input type="text" name="name" placeholder="Your Name" required>
+                    <input type="text" name="address" placeholder="Your Address" required>
+                    <input type="email" name="email" placeholder="Your Email" required>
+                    <input type="tel" name="phone" placeholder="Your Phone Number" required>
+                    <input type="date" name="date" required>
+                    <button type="submit">Book Appointment</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+
+{% endblock %}

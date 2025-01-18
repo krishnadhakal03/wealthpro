@@ -1,0 +1,14 @@
+{% extends 'main/base.html' %}
+
+{% block title %}
+    View List
+{% endblock %}
+
+{%  block content %}
+    <h1>{{ ls.name }}</h1>
+    <ul>
+    {% for item in ls.item_set.all %}
+        <l1>{{ item.text }}</l1>
+    {% endfor %}
+    </ul>
+{% endblock %}

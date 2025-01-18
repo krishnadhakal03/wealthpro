@@ -1,0 +1,25 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% block title %}
+    Services
+{% endblock %}
+
+ {% block content %}
+
+    <!-- Services Section -->
+    <section class="services">
+        <div class="container">
+            <h2 class="section-title">Our Insurance Services</h2>
+            <div class="services-grid">
+                <!-- Service 1 - Life Insurance -->
+                {% for service in services %}
+                <div class="service">
+                    <img src="{{ service.imgUrl.url }}" alt="{{ service.imgAltText }}">
+                    <h3>{{ service.title }}</h3>
+                    <p>{{ service.desc }}</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+{% endblock %}

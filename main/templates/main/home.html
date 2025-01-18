@@ -1,0 +1,38 @@
+{% extends 'main/base.html' %}
+
+{% block title %}
+    Home
+{% endblock %}
+
+{% block hclass %}
+    class="home-page"
+    {% endblock %}
+{% load static %}
+ {% block content %}
+     <!-- Slider Section -->
+<section class="slider">
+    <div class="slides-container">
+      {% for image in slider_images %}
+        <div class="slide">
+            <img src=" {{ image.sliderImageUrl.url }}" alt="{{ image.sliderImageAltText}}">
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="controls">
+        <button class="prev">&#10094;</button>
+        <button class="next">&#10095;</button>
+    </div>
+</section>
+
+     {% for info in info_sections %}
+    <!-- Info Section -->
+    <section class="info">
+        <div class="container">
+            <h2>{{ info.title }}</h2>
+            <img src=" {{  info.imgUrl.url }}" alt="{{ info.imgAltText}}" class="secImage">
+            <p>{{ info.desc }}</p>
+        </div>
+    </section>
+     {% endfor %}
+ {% endblock %}

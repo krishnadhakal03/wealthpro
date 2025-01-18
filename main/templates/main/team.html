@@ -1,0 +1,32 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% block title %}
+    Team
+{% endblock %}
+
+{% block content %}
+    <!-- Team Section -->
+    <section class="team">
+        <div class="container">
+            <h2 class="section-title">Meet Our Team</h2>
+            <div class="team-grid">
+                {% for team in teams %}
+                <!-- Team Member 1 -->
+                <div class="team-member">
+                    <img src="{{ team.profileUrl.url }}" alt="Team Member 1">
+                    <h3>{{ team.name }}</h3>
+
+                    <!-- Adding labels for each <p> and left-aligning text -->
+                    <p style="text-align: left;"><strong>Designation:</strong> {{ team.designation }}</p>
+                    <p style="text-align: left;"><strong>Address:</strong> {{ team.address }}</p>
+                    <p style="text-align: left;"><strong>Phone:</strong> {{ team.phone }}</p>
+                    <p style="text-align: left;"><strong>Email:</strong> {{ team.email }}</p>
+
+                    <!-- Displaying website URL as a clickable link with left alignment -->
+                    <p style="text-align: left;"><strong>Website:</strong> <a href="{{ team.websiteUrl }}" target="_blank">{{ team.websiteUrl }}</a></p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+{% endblock %}
