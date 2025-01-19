@@ -576,6 +576,30 @@ button:hover {
     }
 }
 
+/*contact phone validation*/
+input:invalid, textarea:invalid, text:invalid {
+  border: 0.5px solid red;
+}
+
+input:valid, textarea:valid, text:valid {
+  border: 0.5px solid green;
+}
+
+
+/*video styling*/
+.video-gallery .video {
+    margin-bottom: 20px;
+}
+.video-gallery h3 {
+    font-size: 1.5em;
+    margin: 10px 0;
+}
+.video-gallery iframe {
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+
 
 
 

@@ -5,31 +5,50 @@
 {% endblock %}
 
  {% block content %}
-    <!-- Video Upload Section -->
-    <section class="video-upload">
-        <div class="container">
-            <h2 class="section-title">Upload a Video</h2>
-            <div class="upload-container">
-                <input type="file" id="videoFile" accept="video/*">
-                <button onclick="uploadVideo()">Upload</button>
-            </div>
-        </div>
-    </section>
 
-    <!-- Video Gallery Section -->
-    <section class="video-gallery">
-        <div class="container">
-            <h2 class="section-title">Our Video Gallery</h2>
-            {% for video in vid %}
+              <!-- Direct Video Gallery Section -->
+  <section class="video-gallery">
+    <div class="container">
+        <h2 class="section-title">Uploaded Video Gallery</h2>
+        {% for video in directVideo %}
+        <div class="video">
+        <p><h3><b>Title: </b> {{ video.title }}</h3></p>
+            <video width="560" height="315" controls>
+                <source src="{{ video.video.url }}" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+            <p><b>Description: </b> {{ video.description }}</p>
+        </div>
+        {% empty %}
+        <p>No videos available.</p>
+        {% endfor %}
+    </div>
+</section>
+
+    <!-- Youtube Video Gallery Section -->
+   <section class="video-gallery">
+    <div class="container">
+        <h2 class="section-title">YouTube Gallery</h2>
+        {% for video in vid %}
             <div class="video">
-                <iframe width="560" height="315" src="{{ video.url}}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-                <p>{{ video.title}}</p>
+                <h3><b>Title: </b> {{ video.title }}</h3> <!-- Use heading tags for titles -->
+                <iframe
+                    width="560"
+                    height="315"
+                    src="{{ video.url }}"
+                    title="{{ video.title }}"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    referrerpolicy="strict-origin-when-cross-origin"
+                    allowfullscreen>
+                </iframe>
+                <p><b>Description: </b> {{ video.desc }}</p>
             </div>
-            {% empty %}
+        {% empty %}
             <p>No videos available.</p>
         {% endfor %}
-            <!-- Repeat for additional videos -->
-        </div>	
-    </section>
+    </div>
+</section>
+
+
 
 {% endblock %}

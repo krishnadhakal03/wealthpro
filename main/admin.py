@@ -1,6 +1,6 @@
 from django.contrib import admin
-from django.utils.html import mark_safe
-from .models import Videos, HomeInfoSection, HomeSliderImage, Team, FooterSection, ServicesSection
+from django.utils.html import mark_safe, format_html
+from .models import Videos, HomeInfoSection, HomeSliderImage, Team, FooterSection, ServicesSection, Appointment, BusinessContact, Contactus, VideoDirect
 
 
 admin.site.register(Videos)
@@ -47,12 +47,46 @@ class HomeSliderImageAdmin(admin.ModelAdmin):
 @admin.register(ServicesSection)
 class ServicesSectionAdmin(admin.ModelAdmin):
     list_display = ('title', 'desc' , 'imgUrl' , 'profile_image' )
-    List_filter = ['title']
+    list_filter = ['title']
     def profile_image(self, obj):
         if obj.imgUrl:  # Check for the correct field name, assuming 'imgUrl' stores the image
             return mark_safe(f"<img src='{obj.imgUrl.url}' width='300' height='300' />")
         return "No Image"
 
     profile_image.short_description = "Profile Img"
+
+@admin.register(Appointment)
+class AppointmentAdmin(admin.ModelAdmin):
+    list_display = ('name','email','phone','address','appointment','meetingUrl','meetingDate','meetingTime','meetingMedia','status')
+    list_filter = ['name','appointment','meetingDate','meetingMedia','status']
+
+@admin.register(BusinessContact)
+class BusinessContactAdmin(admin.ModelAdmin):
+    list_display = ('name','email','phone')
+    list_filter = ['name','email']
+
+@admin.register(Contactus)
+class ContactsAdmin(admin.ModelAdmin):
+    list_display = ('name','email','phone','address','state','status')
+    list_filter = ['name','status','state']
+
+@admin.register(VideoDirect)
+class VideoDirectAdmin(admin.ModelAdmin):
+    list_display = ('title', 'uploaded_at', 'video_preview')
+
+    def video_preview(self, obj):
+        if obj.video:
+            # Embed a video player in the admin panel
+            return format_html(
+                '<video width="320" height="240" controls>'
+                '<source src="{}" type="video/mp4">'
+                'Your browser does not support the video tag.'
+                '</video>',
+                obj.video.url
+            )
+        return "No video uploaded"
+
+    video_preview.short_description = "Video Preview"
+
 
 
