@@ -599,6 +599,23 @@ input:valid, textarea:valid, text:valid {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+/* Wealthpro logo Add to your style.css */
+/* Add to your style.css */
+.header-content {
+    display: flex;
+    align-items: center; /* Aligns logo and h1 vertically in the center */
+    justify-content: center; /* Centers logo and h1 horizontally */
+}
+
+.logo {
+    margin-right: 15px; /* Space between logo and h1 */
+}
+
+.logo-img {
+    height: 100px; /* Adjust the size of your logo */
+    width: auto;
+}
+
 
 
 

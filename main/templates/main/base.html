@@ -7,6 +7,7 @@
     <title>{% block title %}
     {% endblock %}</title>
   <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <link rel="icon" href="{% static 'images/dlogo.png' %}" type="image/png">
     <!-- Google Fonts for better typography -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
     <!-- Bootstrap (Optional for better grid and layout control) -->
@@ -20,7 +21,12 @@
     <!-- Header -->
    <header class="main-header">
     <div class="container">
-        <h1>Next Generation Wealth Pro</h1>
+        <div class="header-content">
+            <div class="logo">
+                <img src="{% static 'images/dlogo.png' %}" alt="Logo" class="logo-img">
+            </div>
+            <h1>Next Generation Wealth Pro</h1>
+        </div>
         <div class="menu">
             <nav>
                 <button class="menu-toggle" onclick="toggleMenu()">☰</button>
