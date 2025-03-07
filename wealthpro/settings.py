@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-w_anj&11r^lm5@sltv*t6q(&im7kch!uj*p4*v-0xd5j^61csc
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['wealthpro.onrender.com', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['wealthpro.onrender.com', 'localhost', 'nextgenerationwealthpro.com','wealthpro.azurewebsites.net']
 
 
 # Application definition
@@ -118,13 +118,13 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-# Optional (for production setup)
+# Directory to look for additional static files during development
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),  # Tells Django where to look for static files
+    os.path.join(BASE_DIR, 'static'),  # Path to custom static files directory (e.g., 'static')
 ]
 
-# Optional (used for collecting static files for production deployment)
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # Path to collect static files for production
+# Directory to collect static files for production deployment
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # This is where collected static files will go in production
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
