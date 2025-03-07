@@ -155,6 +155,8 @@ SESSION_COOKIE_SECURE = True  # Make sure session cookies are secure as well
 
 CSRF_TRUSTED_ORIGINS = [
     'https://wealthpro.onrender.com',
+    'wealthpro.azurewebsites.net',
+    'nextgenerationwealthpro.com',
 ]
 
 # If you're running locally and encountering this issue, set this to False temporarily
