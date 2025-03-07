@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-w_anj&11r^lm5@sltv*t6q(&im7kch!uj*p4*v-0xd5j^61csc'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['wealthpro-c4ghhwhkh6evbwdu.centralus-01.azurewebsites.net', 'localhost', 'nextgenerationwealthpro.com','wealthpro-c4ghhwhkh6evbwdu.centralus-01.azurewebsites.net']
 
@@ -117,11 +117,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = '/static/'
-
-# Directory to look for additional static files during development
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),  # Path to custom static files directory (e.g., 'static')
-]
 
 # Directory to collect static files for production deployment
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # This is where collected static files will go in production
