@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-w_anj&11r^lm5@sltv*t6q(&im7kch!uj*p4*v-0xd5j^61csc
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['wealthpro.onrender.com', 'localhost', 'nextgenerationwealthpro.com','wealthpro.azurewebsites.net']
+ALLOWED_HOSTS = ['wealthpro.onrender.com', 'localhost', 'nextgenerationwealthpro.com','wealthpro-c4ghhwhkh6evbwdu.centralus-01.azurewebsites.net']
 
 
 # Application definition
@@ -155,8 +155,8 @@ SESSION_COOKIE_SECURE = True  # Make sure session cookies are secure as well
 
 CSRF_TRUSTED_ORIGINS = [
     'https://wealthpro.onrender.com',
-    'wealthpro.azurewebsites.net',
-    'nextgenerationwealthpro.com',
+    'https://wealthpro-c4ghhwhkh6evbwdu.centralus-01.azurewebsites.net/',
+    'https://nextgenerationwealthpro.com',
 ]
 
 # If you're running locally and encountering this issue, set this to False temporarily
