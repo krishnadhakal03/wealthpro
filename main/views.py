@@ -35,7 +35,7 @@ def appointment(request):
             phone = form.cleaned_data['phone']
             email = form.cleaned_data['email']
             address = form.cleaned_data['address']
-            addressline2 = form.cleaned_data['addressline2']
+            addressline2 = form.cleaned_data.get('addressline2', '')
             city = form.cleaned_data['city']
             zipcode = form.cleaned_data['zipcode']
             state = form.cleaned_data['state']
@@ -50,7 +50,7 @@ def appointment(request):
                 Phone: {phone}
                 Email: {email}
                 Address: {address}
-                Addressline2: {addressline2}
+                Addressline2: {addressline2 if addressline2 else 'N/A'}
                 City: {city}
                 Zipcode: {zipcode}
                 State: {state}
@@ -78,7 +78,7 @@ def appointment(request):
                     phone=phone,
                     email=email,
                     address=address,
-                    addressline2=addressline2,
+                    addressline2=addressline2 or None,
                     city=city,
                     zipcode=zipcode,
                     state=state,
