@@ -66,12 +66,12 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             // US phone validation (additional check)
-            let phone = document.querySelector('input[name="phone"]').value;
-            const phonePattern = /(\(\d{3}\)\s?|\d{3}[-\s])\d{3}[-\s]?\d{4}/;
-            if (!phonePattern.test(phone)) {
-                isValid = false;
-                alert('Please enter a valid US phone number!');
-            }
+            //let phone = document.querySelector('input[name="phone"]').value;
+            //const phonePattern = /(\(\d{3}\)\s?|\d{3}[-\s])\d{3}[-\s]?\d{4}/;
+            //if (!phonePattern.test(phone)) {
+            //    isValid = false;
+            //    alert('Please enter a valid US phone number!');
+           // }
 
             if (!isValid) {
                 e.preventDefault(); // Prevent form submission
