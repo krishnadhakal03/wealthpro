@@ -1,0 +1,267 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls static admin_modify %}
+
+{% block extrastyle %}{{ block.super }}
+<style>
+    .backup-container {
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 5px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    
+    .backup-header {
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .backup-content {
+        margin-bottom: 30px;
+    }
+    
+    .info-box {
+        padding: 15px;
+        background-color: #f8f9fa;
+        border-radius: 5px;
+        margin-bottom: 20px;
+    }
+    
+    .warning-box {
+        padding: 15px;
+        background-color: #fff3cd;
+        border-left: 4px solid #ffc107;
+        margin-bottom: 20px;
+    }
+    
+    .backup-button {
+        background-color: #28a745;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: bold;
+    }
+    
+    .backup-button:hover {
+        background-color: #218838;
+    }
+    
+    .backup-steps {
+        counter-reset: step-counter;
+        list-style-type: none;
+        padding-left: 0;
+    }
+    
+    .backup-steps li {
+        position: relative;
+        padding-left: 40px;
+        margin-bottom: 15px;
+    }
+    
+    .backup-steps li:before {
+        content: counter(step-counter);
+        counter-increment: step-counter;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 30px;
+        height: 30px;
+        background-color: #007bff;
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+    }
+    
+    .collapsible {
+        background-color: #f1f1f1;
+        color: #444;
+        cursor: pointer;
+        padding: 18px;
+        width: 100%;
+        border: none;
+        text-align: left;
+        outline: none;
+        font-size: 15px;
+        border-radius: 4px;
+        margin-top: 20px;
+    }
+    
+    .active, .collapsible:hover {
+        background-color: #e0e0e0;
+    }
+    
+    .collapsible:after {
+        content: '\002B';
+        color: #777;
+        font-weight: bold;
+        float: right;
+        margin-left: 5px;
+    }
+    
+    .active:after {
+        content: "\2212";
+    }
+    
+    .collapse-content {
+        padding: 0 18px;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.2s ease-out;
+        background-color: #f8f9fa;
+        border-radius: 0 0 4px 4px;
+    }
+    
+    .code-block {
+        background-color: #f4f4f4;
+        border-left: 4px solid #007bff;
+        padding: 10px;
+        margin: 10px 0;
+        overflow-x: auto;
+        font-family: monospace;
+    }
+</style>
+{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+    <a href="{% url 'admin:index' %}">{% translate "Home" %}</a>
+    &rsaquo; <a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ opts.app_config.verbose_name }}</a>
+    &rsaquo; <a href="{% url 'admin:main_sitesettings_changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a>
+    &rsaquo; {% translate "Database Backup" %}
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="backup-container">
+    <div class="backup-header">
+        <h1>{% translate "Database Backup" %}</h1>
+        <p>Create and download a complete backup of the WealthPro database.</p>
+    </div>
+    
+    <div class="backup-content">
+        <div class="info-box">
+            <h3>About Database Backups</h3>
+            <p>This tool creates a complete SQLite database backup that you can download to your computer. You can use this backup to restore your site's data if needed.</p>
+            <p>The backup file will be named <code>wealthpro_db_backup_YYYYMMDD_HHMMSS.sqlite</code> with the current timestamp.</p>
+        </div>
+        
+        <div class="warning-box">
+            <h3>Important Notes</h3>
+            <ul>
+                <li>Backup files contain all your application data, including sensitive information.</li>
+                <li>Store downloaded backups securely.</li>
+                <li>Regular backups are recommended before making significant changes to your site.</li>
+                <li>Only superusers can create backups.</li>
+            </ul>
+        </div>
+        
+        <h3>Backup Process</h3>
+        <ol class="backup-steps">
+            <li>Click the "Create Backup" button below.</li>
+            <li>Your browser will automatically download the database file.</li>
+            <li>Store the file in a secure location.</li>
+            <li>For additional security, consider encrypting the backup file.</li>
+        </ol>
+    </div>
+    
+    {% if has_permission %}
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="backup-button">
+            <i class="fas fa-download"></i> Create Backup
+        </button>
+    </form>
+    {% else %}
+    <div class="warning-box">
+        <p>You do not have permission to create database backups. Only superusers can perform this action.</p>
+    </div>
+    {% endif %}
+    
+    <button class="collapsible">How to Restore from a Backup</button>
+    <div class="collapse-content">
+        <div style="padding: 15px;">
+            <h3>Restoring from a Backup</h3>
+            <p>To restore your site from a backup, follow these steps:</p>
+            <ol>
+                <li>Stop the Django application</li>
+                <li>Replace the SQLite database file with your backup file</li>
+                <li>Restart the application</li>
+            </ol>
+            
+            <h4>Restoration Steps for Production (AWS EC2)</h4>
+            <div class="code-block">
+                <pre>
+# SSH into your EC2 instance
+ssh -i your-key.pem ec2-user@your-instance-ip
+
+# Stop the application service
+sudo systemctl stop wealthpro
+
+# Navigate to the database directory
+cd /path/to/wealthpro
+
+# Backup the current database just in case
+cp db.sqlite3 db.sqlite3.before_restore
+
+# Copy your backup file to replace the current database
+cp /path/to/your/wealthpro_db_backup_YYYYMMDD_HHMMSS.sqlite db.sqlite3
+
+# Restart the application
+sudo systemctl start wealthpro</pre>
+            </div>
+            
+            <h3>Best Practices</h3>
+            <ul>
+                <li><strong>Regular Backups</strong>: Create backups before making significant changes to your site</li>
+                <li><strong>Backup Rotation</strong>: Don't keep all backups forever - implement a rotation policy</li>
+                <li><strong>Test Restores</strong>: Periodically test the restore process to ensure backups are valid</li>
+                <li><strong>Offsite Storage</strong>: Copy important backups to a different location or cloud storage</li>
+                <li><strong>Documentation</strong>: Keep a log of when backups were made and what changes were occurring</li>
+            </ul>
+            
+            <h3>Automated Backup Script</h3>
+            <p>For production environments, consider setting up automated backups using a script:</p>
+            <div class="code-block">
+                <pre>
+#!/bin/bash
+DATE=$(date +%Y%m%d_%H%M%S)
+DB_PATH="/path/to/wealthpro/db.sqlite3"
+BACKUP_DIR="/path/to/backups"
+cp $DB_PATH $BACKUP_DIR/wealthpro_db_$DATE.sqlite
+# Keep only the last 7 backups
+ls -tp $BACKUP_DIR/wealthpro_db_*.sqlite | grep -v '/$' | tail -n +8 | xargs -I {} rm -- {}</pre>
+            </div>
+            
+            <p>Set this up as a cron job to run daily:</p>
+            <div class="code-block">
+                <pre>0 2 * * * /path/to/backup-script.sh</pre>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var coll = document.getElementsByClassName("collapsible");
+    for (var i = 0; i < coll.length; i++) {
+        coll[i].addEventListener("click", function() {
+            this.classList.toggle("active");
+            var content = this.nextElementSibling;
+            if (content.style.maxHeight) {
+                content.style.maxHeight = null;
+            } else {
+                content.style.maxHeight = content.scrollHeight + "px";
+            } 
+        });
+    }
+});
+</script>
+{% endblock %} 

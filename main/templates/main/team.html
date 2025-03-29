@@ -1,32 +1,192 @@
 {% extends 'main/base.html' %}
 {% load static %}
-{% block title %}
-    Team
+
+{% block title %}Our Team - Next Generation Wealth Pro{% endblock %}
+
+{% block extra_css %}
+<style>
+    .team-contact-icon {
+        width: 28px;
+        height: 28px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 12px;
+        color: var(--bs-primary);
+    }
+    
+    .contact-info-item {
+        display: flex;
+        align-items: center;
+        padding: 5px 0;
+        color: var(--bs-dark);
+    }
+    
+    .team-card {
+        transition: all 0.3s ease;
+        border: 1px solid rgba(0,0,0,0.08);
+    }
+    
+    .team-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+    }
+    
+    .team-image {
+        height: 220px;
+        width: 220px;
+        object-fit: cover;
+        border: 4px solid #f8f9fa;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+    
+    .team-card:hover .team-image {
+        border-color: rgba(var(--bs-primary-rgb), 0.2);
+    }
+</style>
+{% endblock %}
+
+{% block hero %}
+<!-- Hero Header -->
+<div class="hero-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <h1>Meet Our Expert Team</h1>
+                <p>Our team of financial professionals is dedicated to helping you achieve your financial goals.</p>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block content %}
-    <!-- Team Section -->
-    <section class="team">
-        <div class="container">
-            <h2 class="section-title">Meet Our Team</h2>
-            <div class="team-grid">
-                {% for team in teams %}
-                <!-- Team Member 1 -->
-                <div class="team-member">
-                    <img src="{{ team.profileUrl.url }}" alt="Team Member 1">
-                    <h3>{{ team.name }}</h3>
-
-                    <!-- Adding labels for each <p> and left-aligning text -->
-                    <p style="text-align: left;"><strong>Designation:</strong> {{ team.designation }}</p>
-                    <p style="text-align: left;"><strong>Address:</strong> {{ team.address }}</p>
-                    <p style="text-align: left;"><strong>Phone:</strong> {{ team.phone }}</p>
-                    <p style="text-align: left;"><strong>Email:</strong> {{ team.email }}</p>
-
-                    <!-- Displaying website URL as a clickable link with left alignment -->
-                    <p style="text-align: left;"><strong>Website:</strong> <a href="{{ team.websiteUrl }}" target="_blank">{{ team.websiteUrl }}</a></p>
-                </div>
-                {% endfor %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12">
+            <div class="section-title">
+                <h6>OUR EXPERTS</h6>
+                <h1>Meet The Financial Professionals</h1>
             </div>
         </div>
-    </section>
+    </div>
+
+    <!-- Team Members (Dynamic from Database) -->
+    <div class="row g-4">
+        {% for member in teams %}
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="service-item p-4 shadow-sm rounded team-card">
+                <div class="text-center mb-4">
+                    {% if member.profileUrl %}
+                    <img src="{{ member.profileUrl.url }}" alt="{{ member.name }}" class="img-fluid team-image">
+                    {% else %}
+                    <!-- Inline SVG placeholder instead of external image -->
+                    <div class="team-image mx-auto d-flex align-items-center justify-content-center bg-light">
+                        <i class="fa fa-user fa-4x text-primary opacity-50"></i>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <h4 class="text-center">{{ member.name }}</h4>
+                <p class="text-primary text-center mb-3">{{ member.designation }}</p>
+                
+                <div class="contact-info mt-3">
+                    <!-- Phone -->
+                    <div class="contact-info-item mb-2">
+                        <div class="team-contact-icon">
+                            <i class="fa fa-phone-alt me-0"></i>
+                        </div>
+                        <span>{{ member.phone }}</span>
+                    </div>
+                    
+                    <!-- Email -->
+                    <div class="contact-info-item mb-2">
+                        <div class="team-contact-icon">
+                            <i class="fa fa-envelope me-0"></i>
+                        </div>
+                        <span class="text-truncate" style="max-width: 170px;" title="{{ member.email }}">{{ member.email }}</span>
+                    </div>
+                    
+                    <!-- Website (if available) -->
+                    {% if member.websiteUrl %}
+                    <div class="contact-info-item mb-2">
+                        <div class="team-contact-icon">
+                            <i class="fa fa-globe me-0"></i>
+                        </div>
+                        <span class="text-truncate" style="max-width: 170px;" title="{{ member.websiteUrl }}">Website</span>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Agent Number (if available) -->
+                    {% if member.agentNo %}
+                    <div class="contact-info-item">
+                        <div class="team-contact-icon">
+                            <i class="fa fa-id-card me-0"></i>
+                        </div>
+                        <span>Agent #: {{ member.agentNo }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center">
+            <p>No team members are currently available. Please check back later.</p>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Team Culture Section -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="section-title">
+                <h6>OUR CULTURE</h6>
+                <h1>Why Join Our Team</h1>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row align-items-center g-5">
+        <div class="col-lg-6">
+            <div class="rounded shadow-sm p-4 bg-light">
+                <i class="fa fa-users fa-5x text-primary d-block mx-auto mb-4"></i>
+                <h4 class="text-center">Team Collaboration</h4>
+                <p class="text-center">Our team works together to provide comprehensive financial solutions</p>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <h2 class="mb-4">A Culture of Excellence and Growth</h2>
+            <p>At Wealth Pro, we foster a collaborative environment where financial professionals can thrive and develop their expertise. We believe in continuous learning, innovation, and providing exceptional service to our clients.</p>
+            
+            <div class="row g-4 mt-3">
+                <div class="col-sm-6">
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="fa fa-check-circle text-primary me-3 fs-4"></i>
+                        <h5 class="mb-0">Professional Development</h5>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="fa fa-check-circle text-primary me-3 fs-4"></i>
+                        <h5 class="mb-0">Collaborative Environment</h5>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="fa fa-check-circle text-primary me-3 fs-4"></i>
+                        <h5 class="mb-0">Work-Life Balance</h5>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="fa fa-check-circle text-primary me-3 fs-4"></i>
+                        <h5 class="mb-0">Competitive Benefits</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

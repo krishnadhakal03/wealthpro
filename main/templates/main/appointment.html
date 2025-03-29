@@ -1,118 +1,438 @@
 {% extends 'main/base.html' %}
 {% load static %}
-{% block title %}
-    Appointment
+
+{% block title %}Appointment - Next Generation Wealth Pro{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<style>
+    .calendar-container {
+        margin-bottom: 2rem;
+    }
+    
+    .time-slots {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 1rem;
+    }
+    
+    .time-slot {
+        padding: 0.5rem 1rem;
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .time-slot:hover {
+        background-color: #e9ecef;
+    }
+    
+    .time-slot.selected {
+        background-color: #0d6efd;
+        color: white;
+        border-color: #0d6efd;
+    }
+    
+    .date-notice {
+        margin-top: 1rem;
+        color: #6c757d;
+    }
+    
+    .zoom-meeting-details {
+        background-color: #e8f4ff;
+        border-left: 4px solid #0d6efd;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .calendar-instructions {
+        margin-bottom: 1.5rem;
+        color: #495057;
+    }
+</style>
+{% endblock %}
+
+{% block extra_head_js %}
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+{% endblock %}
+
+{% block hero %}
+<!-- Hero Header -->
+<div class="hero-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <h1>Book an Appointment</h1>
+                <p>Schedule a consultation with our financial experts to discuss your wealth management needs.</p>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
  {% block content %}
-
-    <!-- Appointment Section -->
-    <section class="appointment">
-        <div class="container">
-            <h2 class="section-title">Book an Appointment</h2>
-            <div class="appointment-form-container">
-                <!-- Appointment Form -->
-                <form action="{% url 'appointment' %}" method="POST" id="appointmentForm" class="appointment-form">
-                     {% csrf_token %}
-
-            <input type="text" name="name" placeholder="Your Name" required>
-
-            <input type="tel" name="phone" placeholder="Your Phone Number" required>
-
-            <input type="email" name="email" placeholder="Your Email" required>
-
-            <textarea name="address" placeholder="Your Address" required></textarea>
-
-            <textarea name="addressline2" placeholder="Your Address Line 2" optional></textarea>
-
-            <input type="text" name="city" placeholder="City" required>
-
-            <input type="text" name="zipcode" placeholder="Zip Code" required>
-
-            <select name="state" required>
-                <option value="" disabled selected>Choose a State</option>
-                <option value="AL">Alabama</option>
-                <option value="AK">Alaska</option>
-                <option value="AZ">Arizona</option>
-                <option value="AR">Arkansas</option>
-                <option value="CA">California</option>
-                <option value="CO">Colorado</option>
-                <option value="CT">Connecticut</option>
-                <option value="DE">Delaware</option>
-                <option value="FL">Florida</option>
-                <option value="GA">Georgia</option>
-                <option value="HI">Hawaii</option>
-                <option value="ID">Idaho</option>
-                <option value="IL">Illinois</option>
-                <option value="IN">Indiana</option>
-                <option value="IA">Iowa</option>
-                <option value="KS">Kansas</option>
-                <option value="KY">Kentucky</option>
-                <option value="LA">Louisiana</option>
-                <option value="ME">Maine</option>
-                <option value="MD">Maryland</option>
-                <option value="MA">Massachusetts</option>
-                <option value="MI">Michigan</option>
-                <option value="MN">Minnesota</option>
-                <option value="MS">Mississippi</option>
-                <option value="MO">Missouri</option>
-                <option value="MT">Montana</option>
-                <option value="NE">Nebraska</option>
-                <option value="NV">Nevada</option>
-                <option value="NH">New Hampshire</option>
-                <option value="NJ">New Jersey</option>
-                <option value="NM">New Mexico</option>
-                <option value="NY">New York</option>
-                <option value="NC">North Carolina</option>
-                <option value="ND">North Dakota</option>
-                <option value="OH">Ohio</option>
-                <option value="OK">Oklahoma</option>
-                <option value="OR">Oregon</option>
-                <option value="PA">Pennsylvania</option>
-                <option value="RI">Rhode Island</option>
-                <option value="SC">South Carolina</option>
-                <option value="SD">South Dakota</option>
-                <option value="TN">Tennessee</option>
-                <option value="TX">Texas</option>
-                <option value="UT">Utah</option>
-                <option value="VT">Vermont</option>
-                <option value="VA">Virginia</option>
-                <option value="WA">Washington</option>
-                <option value="WV">West Virginia</option>
-                <option value="WI">Wisconsin</option>
-                <option value="WY">Wyoming</option>
-                <!-- Territories -->
-                <option value="DC">District of Columbia</option>
-                <option value="AS">American Samoa</option>
-                <option value="GU">Guam</option>
-                <option value="MP">Northern Mariana Islands</option>
-                <option value="PR">Puerto Rico</option>
-                <option value="VI">U.S. Virgin Islands</option>
-                <option value="UM">U.S. Minor Outlying Islands</option>
-            </select>
-            <input type="text" name="country" value="US" placeholder="Country (Default: US)" required>
-            <input type="date" name="appointment" placeholder="Pick Appointment date" required>
-            <button type="submit">Send Message</button>
+<div class="container py-5">
+    <div class="row g-5">
+        <!-- Appointment Form -->
+        <div class="col-lg-7">
+            <div class="bg-light rounded p-5">
+                <div class="section-title">
+                    <h6>SCHEDULE NOW</h6>
+                    <h1>Book Your Appointment</h1>
+                </div>
+                
+                {% if messages %}
+                <div class="messages">
+                    {% for message in messages %}
+                    <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %}" role="alert">
+                        {{ message }}
+                        
+                        {% if message.tags == 'success' and zoom_meeting %}
+                        <div class="zoom-meeting-details mt-3">
+                            <h5>Zoom Meeting Details</h5>
+                            <p><strong>Join URL:</strong> <a href="{{ zoom_meeting.join_url }}" target="_blank">{{ zoom_meeting.join_url }}</a></p>
+                            <p><strong>Meeting ID:</strong> {{ zoom_meeting.id }}</p>
+                            {% if zoom_meeting.password %}
+                            <p><strong>Password:</strong> {{ zoom_meeting.password }}</p>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% elif success %}
+                <!-- Only show this if no messages from the messages framework -->
+                <div class="alert alert-success" role="alert">
+                    Your appointment has been scheduled successfully! We'll contact you shortly to confirm.
+                    
+                    {% if zoom_meeting %}
+                    <div class="zoom-meeting-details mt-3">
+                        <h5>Zoom Meeting Details</h5>
+                        <p><strong>Join URL:</strong> <a href="{{ zoom_meeting.join_url }}" target="_blank">{{ zoom_meeting.join_url }}</a></p>
+                        <p><strong>Meeting ID:</strong> {{ zoom_meeting.id }}</p>
+                        {% if zoom_meeting.password %}
+                        <p><strong>Password:</strong> {{ zoom_meeting.password }}</p>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+                
+                <div class="mb-4 calendar-instructions">
+                    <h5>Book Your Appointment in Two Easy Steps:</h5>
+                    <ol>
+                        <li><strong>Select an available Zoom time slot</strong> from the calendar below. This will automatically schedule a Zoom meeting.</li>
+                        <li><strong>OR</strong> - If no available times work for you, just fill in your contact details and leave a preferred date in the "Alternate Date" field. We'll contact you to arrange a time.</li>
+                    </ol>
+                </div>
+                
+                <!-- Zoom Calendar Picker -->
+                <div class="calendar-container">
+                    <div id="appointment-calendar"></div>
+                    <div class="date-notice" id="selected-date-notice">Please select a date to see available time slots.</div>
+                    <div class="time-slots" id="time-slots-container"></div>
+                </div>
+                
+                <form method="post" id="appointment-form">
+                    {% csrf_token %}
+                    <!-- Hidden field for selected Zoom slot -->
+                    <input type="hidden" name="zoom_slot_id" id="zoom_slot_id">
+                    
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <div class="form-floating {% if form.name.errors %}is-invalid{% endif %}">
+                                {{ form.name }}
+                                <label for="{{ form.name.id_for_label }}">Your Name *</label>
+                                {% if form.name.errors %}
+                                <div class="invalid-feedback">
+                                    {{ form.name.errors }}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating {% if form.email.errors %}is-invalid{% endif %}">
+                                {{ form.email }}
+                                <label for="{{ form.email.id_for_label }}">Your Email *</label>
+                                {% if form.email.errors %}
+                                <div class="invalid-feedback">
+                                    {{ form.email.errors }}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating {% if form.phone.errors %}is-invalid{% endif %}">
+                                {{ form.phone }}
+                                <label for="{{ form.phone.id_for_label }}">Your Phone *</label>
+                                {% if form.phone.errors %}
+                                <div class="invalid-feedback">
+                                    {{ form.phone.errors }}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-floating {% if form.address.errors %}is-invalid{% endif %}">
+                                {{ form.address }}
+                                <label for="{{ form.address.id_for_label }}">Your Address *</label>
+                                {% if form.address.errors %}
+                                <div class="invalid-feedback">
+                                    {{ form.address.errors }}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-floating">
+                                {{ form.addressline2 }}
+                                <label for="{{ form.addressline2.id_for_label }}">Address Line 2</label>
+                                <small class="text-muted">Optional</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-floating {% if form.city.errors %}is-invalid{% endif %}">
+                                {{ form.city }}
+                                <label for="{{ form.city.id_for_label }}">City *</label>
+                                {% if form.city.errors %}
+                                <div class="invalid-feedback">
+                                    {{ form.city.errors }}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-floating {% if form.state.errors %}is-invalid{% endif %}">
+                                {{ form.state }}
+                                <label for="{{ form.state.id_for_label }}">State *</label>
+                                {% if form.state.errors %}
+                                <div class="invalid-feedback">
+                                    {{ form.state.errors }}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-floating {% if form.zipcode.errors %}is-invalid{% endif %}">
+                                {{ form.zipcode }}
+                                <label for="{{ form.zipcode.id_for_label }}">Zip Code *</label>
+                                {% if form.zipcode.errors %}
+                                <div class="invalid-feedback">
+                                    {{ form.zipcode.errors }}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-floating {% if form.country.errors %}is-invalid{% endif %}">
+                                {{ form.country }}
+                                <label for="{{ form.country.id_for_label }}">Country *</label>
+                                {% if form.country.errors %}
+                                <div class="invalid-feedback">
+                                    {{ form.country.errors }}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-floating {% if form.appointment.errors %}is-invalid{% endif %}">
+                                {{ form.appointment }}
+                                <label for="{{ form.appointment.id_for_label }}">Alternate Date (if Zoom times don't work)</label>
+                                {% if form.appointment.errors %}
+                                <div class="invalid-feedback">
+                                    {{ form.appointment.errors }}
+                                </div>
+                                {% endif %}
+                            </div>
+                            <small class="text-muted">Optional: If none of the available Zoom slots work for you, provide a preferred date and we'll contact you to arrange a meeting.</small>
+                        </div>
+                        
+                        {% if form.non_field_errors %}
+                        <div class="col-12">
+                            <div class="alert alert-danger">
+                                {% for error in form.non_field_errors %}
+                                {{ error }}
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="col-12 mt-4">
+                            <button class="btn btn-primary w-100 py-3" type="submit">Book Appointment</button>
+                        </div>
+                    </div>
                 </form>
             </div>
         </div>
-    </section>
-
-     <!-- Success Message Modal -->
-{% if success %}
-  <div id="successModal" class="modal" style="display: block;">
-      <div class="modal-content">
-          <h3>Email Sent</h3>
-          <p>Your appointment request has been placed. We will contact you shortly with meeting details. Thank you </p>
-          <button onclick="closeModal()">Close</button>
+        
+        <!-- Business Information -->
+        <div class="col-lg-5">
+            <div class="section-title">
+                <h6>BUSINESS HOURS</h6>
+                <h1>When We're Available</h1>
+            </div>
+            
+            <div class="mb-5">
+                <div class="d-flex align-items-center mb-2">
+                    <i class="fa fa-clock text-primary me-3"></i>
+                    <h5 class="mb-0">Office Hours</h5>
+                </div>
+                <div class="ms-4 ps-3 border-start">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Monday - Friday:</span>
+                        <span>9:00 AM - 5:00 PM</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Saturday:</span>
+                        <span>9:00 AM - 12:00 PM</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span>Sunday:</span>
+                        <span>Closed</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section-title mt-5">
+                <h6>FAQ</h6>
+                <h1>Common Questions</h1>
+            </div>
+            
+            <div class="accordion" id="faqAccordion">
+                <div class="accordion-item mb-3 border-0 rounded shadow-sm">
+                    <h2 class="accordion-header" id="headingOne">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                            What should I bring to my appointment?
+                        </button>
+                    </h2>
+                    <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            Please bring your financial statements, tax returns, investment portfolios, and any financial goals you'd like to discuss. This helps us provide the most tailored advice.
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item mb-3 border-0 rounded shadow-sm">
+                    <h2 class="accordion-header" id="headingTwo">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                            How long does a consultation usually take?
+                        </button>
+                    </h2>
+                    <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            Initial consultations typically last 60-90 minutes, allowing us to thoroughly understand your financial situation and goals.
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item mb-3 border-0 rounded shadow-sm">
+                    <h2 class="accordion-header" id="headingThree">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                            Is there a fee for the initial consultation?
+                        </button>
+                    </h2>
+                    <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            No, we offer complimentary initial consultations to understand your needs and determine how we can best assist you with your financial planning.
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item border-0 rounded shadow-sm">
+                    <h2 class="accordion-header" id="headingFour">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                            How do Zoom appointments work?
+                        </button>
+                    </h2>
+                    <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            After booking a Zoom appointment, you'll receive a confirmation email with a link to join the meeting. At the scheduled time, simply click the link to join. No account is needed, but you may need to download the Zoom app if you haven't used it before.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
       </div>
   </div>
+
+<!-- Calendar JavaScript -->
   <script>
-      function closeModal() {
-          document.getElementById('successModal').style.display = 'none';
-      }
-  </script>
-{% endif %}
-
-
+    document.addEventListener('DOMContentLoaded', function() {
+        // Load calendar data from Django
+        let calendarData = {};
+        try {
+            const calendarDataStr = '{{ calendar_data|escapejs }}';
+            // Check if the string is empty or just whitespace
+            if (calendarDataStr && calendarDataStr.trim()) {
+                calendarData = JSON.parse(calendarDataStr);
+            }
+        } catch (error) {
+            console.error("Error parsing calendar data:", error);
+            calendarData = {};
+        }
+        
+        const availableDates = Object.keys(calendarData);
+        
+        // Initialize flatpickr calendar
+        const calendar = flatpickr("#appointment-calendar", {
+            inline: true,
+            minDate: "today",
+            dateFormat: "Y-m-d",
+            enable: availableDates,
+            onChange: function(selectedDates, dateStr) {
+                showTimeSlots(dateStr);
+            }
+        });
+        
+        // Show time slots for a selected date
+        function showTimeSlots(dateStr) {
+            const slotsContainer = document.getElementById('time-slots-container');
+            const dateNotice = document.getElementById('selected-date-notice');
+            
+            // Clear previous slots
+            slotsContainer.innerHTML = '';
+            
+            if (calendarData[dateStr] && calendarData[dateStr].length > 0) {
+                dateNotice.textContent = `Available times for ${formatDate(dateStr)}:`;
+                
+                // Create slot buttons
+                calendarData[dateStr].forEach(slot => {
+                    const slotButton = document.createElement('div');
+                    slotButton.classList.add('time-slot');
+                    slotButton.dataset.id = slot.id;
+                    slotButton.textContent = slot.formatted;
+                    
+                    slotButton.addEventListener('click', function() {
+                        // Remove selection from all slots
+                        document.querySelectorAll('.time-slot').forEach(el => {
+                            el.classList.remove('selected');
+                        });
+                        
+                        // Add selection to clicked slot
+                        this.classList.add('selected');
+                        
+                        // Update hidden input
+                        document.getElementById('zoom_slot_id').value = this.dataset.id;
+                    });
+                    
+                    slotsContainer.appendChild(slotButton);
+                });
+            } else {
+                dateNotice.textContent = `No available time slots for ${formatDate(dateStr)}. Please select another date.`;
+            }
+        }
+        
+        // Format date for display
+        function formatDate(dateStr) {
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            return new Date(dateStr).toLocaleDateString('en-US', options);
+        }
+        
+        // Initialize datepicker for the alternate date field
+        flatpickr("#id_appointment", {
+            dateFormat: "Y-m-d",
+            minDate: "today"
+        });
+    });
+</script>
 {% endblock %}

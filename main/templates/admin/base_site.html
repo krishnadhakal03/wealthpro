@@ -1,0 +1,123 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
+
+{% block extrastyle %}
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap">
+<style>
+    :root {
+        --primary: #1976d2;
+        --secondary: #2c3e50;
+        --link-fg: #1976d2;
+        --link-hover-color: #1565c0;
+        --accent: #1976d2;
+    }
+    
+    #header {
+        background: var(--primary);
+        color: #fff;
+    }
+    
+    #header a:link, #header a:visited {
+        color: #fff;
+    }
+    
+    #branding h1 {
+        color: #fff;
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 600;
+    }
+    
+    .module h2, .module caption, .inline-group h2 {
+        background: var(--primary);
+    }
+    
+    a:link, a:visited {
+        color: var(--link-fg);
+    }
+    
+    a:hover {
+        color: var(--link-hover-color);
+    }
+    
+    .button, input[type=submit], input[type=button], .submit-row input, a.button {
+        background: var(--primary);
+    }
+    
+    .button:hover, input[type=submit]:hover, input[type=button]:hover {
+        background: var(--link-hover-color);
+    }
+    
+    .button.default, input[type=submit].default {
+        background: var(--primary);
+    }
+    
+    .button.default:hover, input[type=submit].default:hover {
+        background: var(--link-hover-color);
+    }
+    
+    body {
+        font-family: 'Montserrat', sans-serif;
+    }
+    
+    #user-tools a {
+        border-bottom: none;
+        text-decoration: none;
+    }
+    
+    #user-tools a:hover {
+        color: #fff;
+        border-bottom-color: #fff;
+    }
+    
+    .object-tools a:link, .object-tools a:visited {
+        background: var(--primary);
+    }
+    
+    .object-tools a:hover {
+        background: var(--link-hover-color);
+    }
+    
+    .dashboard .module table th {
+        background: var(--primary);
+    }
+    
+    /* Fix contrast for selected items */
+    div.breadcrumbs {
+        background: var(--secondary);
+    }
+    
+    .selector-chosen h2 {
+        background: var(--primary) !important;
+    }
+    
+    .calendar td.selected a {
+        background: var(--primary);
+    }
+    
+    .calendar td a:focus, .timelist a:focus,
+    .calendar td a:hover, .timelist a:hover {
+        background: var(--primary);
+    }
+</style>
+{% endblock %}
+
+{% block branding %}
+<h1 id="site-name">
+    <a href="{% url 'admin:index' %}">
+        {{ site_settings.site_name }} Administration
+    </a>
+</h1>
+{% endblock %}
+
+{% block usertools %}
+<div id="user-tools">
+    {% if user.is_authenticated %}
+    <a href="{% url 'home' %}"><i class="fa fa-home"></i> View Site</a> /
+    {% endif %}
+    {{ block.super }}
+</div>
+{% endblock %}
+
+{% block nav-global %}{% endblock %} 

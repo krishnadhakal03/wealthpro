@@ -1,139 +1,190 @@
 {% extends 'main/base.html' %}
 {% load static %}
-{% block title %}
-    Contact
+
+{% block title %}Contact Us - Next Generation Wealth Pro{% endblock %}
+
+{% block hero %}
+<!-- Hero Header -->
+<div class="hero-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <h1>Get In Touch</h1>
+                <p>Have questions about our services? Contact our team for personalized assistance.</p>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block content %}
-  <!-- Contact Form Section -->
-<section class="contact-form">
-    <div class="container">
-        {% for business in business_contact %}
-        <div class="contact-info">
-            <h2>{{ business.name }}</h2>
-            <ul>
-                <li><strong>Address:</strong> {{ business.address}},  {{ business.addressline2 }}, City, State, ZIP</li>
-                <li><strong>City:</strong> {{ business.city}}</li>
-                <li><strong>State:</strong> {{ business.state}}</li>
-                <li><strong>Zip:</strong> {{ business.zipcode}}</li>
-                <li><strong>Phone:</strong> {{ business.phone }}</li>
-                <li><strong>Email:</strong> {{ business.email }}</li>
-            </ul>
+<div class="container py-5">
+    <div class="row g-4">
+        <!-- Contact Information -->
+        <div class="col-lg-4">
+            <div class="bg-light rounded p-4 shadow-sm h-100">
+                <div class="section-title mb-4">
+                    <h6>CONTACT US</h6>
+                    <h1>Get In Touch</h1>
+                </div>
+                
+                <div class="contact-info-container">
+                    {% if business_contact %}
+                        {% for contact in business_contact %}
+                        <div class="d-flex mb-3">
+                            <i class="fa fa-map-marker-alt text-primary me-3 mt-1" style="font-size: 1.3rem"></i>
+                            <div>
+                                <h5 class="mb-1">Our Office</h5>
+                                <p class="mb-0 small">{{ contact.address }}</p>
+                                {% if contact.addressline2 %}
+                                <p class="mb-0 small">{{ contact.addressline2 }}</p>
+                                {% endif %}
+                                <p class="mb-0 small">{{ contact.city }}, {{ contact.state }} {{ contact.zipcode }}</p>
+                            </div>
+                        </div>
+                        <div class="d-flex mb-3">
+                            <i class="fa fa-phone-alt text-primary me-3 mt-1" style="font-size: 1.3rem"></i>
+                            <div>
+                                <h5 class="mb-1">Phone Number</h5>
+                                <p class="mb-0 small">{{ contact.phone }}</p>
+                            </div>
+                        </div>
+                        <div class="d-flex mb-3">
+                            <i class="fa fa-envelope text-primary me-3 mt-1" style="font-size: 1.3rem"></i>
+                            <div>
+                                <h5 class="mb-1">Email Address</h5>
+                                <p class="mb-0 small">{{ contact.email }}</p>
+                            </div>
+                        </div>
+                        {% if contact.establish %}
+                        <div class="d-flex mb-0">
+                            <i class="fa fa-building text-primary me-3 mt-1" style="font-size: 1.3rem"></i>
+                            <div>
+                                <h5 class="mb-1">Established</h5>
+                                <p class="mb-0 small">{{ contact.establish|date:"F Y" }}</p>
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% endfor %}
+                    {% else %}
+                    <div class="d-flex mb-3">
+                        <i class="fa fa-map-marker-alt text-primary me-3 mt-1" style="font-size: 1.3rem"></i>
+                        <div>
+                            <h5 class="mb-1">Our Office</h5>
+                            <p class="mb-0 small">123 Street, New York, USA</p>
+                        </div>
+                    </div>
+                    <div class="d-flex mb-3">
+                        <i class="fa fa-phone-alt text-primary me-3 mt-1" style="font-size: 1.3rem"></i>
+                        <div>
+                            <h5 class="mb-1">Phone Number</h5>
+                            <p class="mb-0 small">+012 345 6789</p>
+                        </div>
+                    </div>
+                    <div class="d-flex mb-0">
+                        <i class="fa fa-envelope text-primary me-3 mt-1" style="font-size: 1.3rem"></i>
+                        <div>
+                            <h5 class="mb-1">Email Address</h5>
+                            <p class="mb-0 small">info@wealthpro.com</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
         </div>
-        {% endfor %}
-
-        <div class="contact-form-container">
-            <h2 class="section-title">Get In Touch</h2>
-           <form action="{% url 'contact' %}" method="POST" class="contact-form-container">
-            {% csrf_token %}
-
-            <input type="text" name="name" placeholder="Your Name" required>
-
-            <input type="tel" name="phone" id="phone" placeholder="Your Phone Number (XXX) XXX-XXXX" " title="Phone number format: (XXX) XXX-XXXX">
-
-            <input type="email" name="email" placeholder="Your Email" required>
-
-            <textarea name="address" placeholder="Your Address" required></textarea>
-
-            <textarea name="addressline2" placeholder="Your Address Line 2" optional></textarea>
-
-            <input type="text" name="city" placeholder="City" required>
-
-            <input type="text" name="zipcode" placeholder="Zip Code" required>
-
-            <select name="state" required>
-                <option value="" disabled selected>Choose a State</option>
-                <option value="AL">Alabama</option>
-                <option value="AK">Alaska</option>
-                <option value="AZ">Arizona</option>
-                <option value="AR">Arkansas</option>
-                <option value="CA">California</option>
-                <option value="CO">Colorado</option>
-                <option value="CT">Connecticut</option>
-                <option value="DE">Delaware</option>
-                <option value="FL">Florida</option>
-                <option value="GA">Georgia</option>
-                <option value="HI">Hawaii</option>
-                <option value="ID">Idaho</option>
-                <option value="IL">Illinois</option>
-                <option value="IN">Indiana</option>
-                <option value="IA">Iowa</option>
-                <option value="KS">Kansas</option>
-                <option value="KY">Kentucky</option>
-                <option value="LA">Louisiana</option>
-                <option value="ME">Maine</option>
-                <option value="MD">Maryland</option>
-                <option value="MA">Massachusetts</option>
-                <option value="MI">Michigan</option>
-                <option value="MN">Minnesota</option>
-                <option value="MS">Mississippi</option>
-                <option value="MO">Missouri</option>
-                <option value="MT">Montana</option>
-                <option value="NE">Nebraska</option>
-                <option value="NV">Nevada</option>
-                <option value="NH">New Hampshire</option>
-                <option value="NJ">New Jersey</option>
-                <option value="NM">New Mexico</option>
-                <option value="NY">New York</option>
-                <option value="NC">North Carolina</option>
-                <option value="ND">North Dakota</option>
-                <option value="OH">Ohio</option>
-                <option value="OK">Oklahoma</option>
-                <option value="OR">Oregon</option>
-                <option value="PA">Pennsylvania</option>
-                <option value="RI">Rhode Island</option>
-                <option value="SC">South Carolina</option>
-                <option value="SD">South Dakota</option>
-                <option value="TN">Tennessee</option>
-                <option value="TX">Texas</option>
-                <option value="UT">Utah</option>
-                <option value="VT">Vermont</option>
-                <option value="VA">Virginia</option>
-                <option value="WA">Washington</option>
-                <option value="WV">West Virginia</option>
-                <option value="WI">Wisconsin</option>
-                <option value="WY">Wyoming</option>
-                <!-- Territories -->
-                <option value="DC">District of Columbia</option>
-                <option value="AS">American Samoa</option>
-                <option value="GU">Guam</option>
-                <option value="MP">Northern Mariana Islands</option>
-                <option value="PR">Puerto Rico</option>
-                <option value="VI">U.S. Virgin Islands</option>
-                <option value="UM">U.S. Minor Outlying Islands</option>
-            </select>
-
-            <input type="text" name="country" value="US" placeholder="Country (Default: US)" required>
-
-            <textarea name="reason" placeholder="Reason for Contact" required></textarea>
-
-
-            <button type="submit">Send Message</button>
-           </form>
-
+        
+        <!-- Contact Form -->
+        <div class="col-lg-8">
+            <div class="bg-light rounded p-5 shadow-sm h-100">
+                <div class="section-title mb-4">
+                    <h6>SEND MESSAGE</h6>
+                    <h1>Contact Form</h1>
+                </div>
+                
+                {% if success %}
+                <div class="alert alert-success" role="alert">
+                    Your message has been sent successfully! We'll get back to you soon.
+                </div>
+                {% endif %}
+                
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <div class="form-floating">
+                                <input type="text" class="form-control" id="name" name="name" placeholder="Your Name" required>
+                                <label for="name">Your Name</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input type="email" class="form-control" id="email" name="email" placeholder="Your Email" required>
+                                <label for="email">Your Email</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input type="tel" class="form-control" id="phone" name="phone" placeholder="Your Phone" required>
+                                <label for="phone">Your Phone</label>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-floating">
+                                <input type="text" class="form-control" id="address" name="address" placeholder="Your Address" required>
+                                <label for="address">Your Address</label>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-floating">
+                                <input type="text" class="form-control" id="addressline2" name="addressline2" placeholder="Address Line 2">
+                                <label for="addressline2">Address Line 2</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-floating">
+                                <input type="text" class="form-control" id="city" name="city" placeholder="City" required>
+                                <label for="city">City</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-floating">
+                                <input type="text" class="form-control" id="state" name="state" placeholder="State" required>
+                                <label for="state">State</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-floating">
+                                <input type="text" class="form-control" id="zipcode" name="zipcode" placeholder="Zip Code" required>
+                                <label for="zipcode">Zip Code</label>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-floating">
+                                <input type="text" class="form-control" id="country" name="country" placeholder="Country" required>
+                                <label for="country">Country</label>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-floating">
+                                <textarea class="form-control" placeholder="Reason for Contact" id="reason" name="reason" style="height: 150px" required></textarea>
+                                <label for="reason">Reason for Contact</label>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <button class="btn btn-primary w-100 py-3" type="submit">Send Message</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
-</section>
+</div>
 
-<!-- OpenStreetMap for Virginia -->
-<section class="map">
-    <iframe src="https://www.openstreetmap.org/export/embed.html?bbox=-84.3225%2C36.5400%2C-75.2398%2C39.4662&layer=mapnik" width="100%" height="400" frameborder="0" style="border: 1px solid black"></iframe>
-</section>
-
-<!-- Success Message Modal -->
-{% if success %}
-  <div id="successModal" class="modal" style="display: block;">
-      <div class="modal-content">
-          <h3>Email Sent</h3>
-          <p>Thank you for contacting us. We will get back to you soon!</p>
-          <button onclick="closeModal()">Close</button>
-      </div>
-  </div>
-  <script>
-      function closeModal() {
-          document.getElementById('successModal').style.display = 'none';
-      }
-  </script>
-{% endif %}
-
+<!-- Map Section (if applicable) -->
+<div class="container-xxl mb-5 p-0">
+    <iframe class="w-100" style="height: 450px;" 
+        src="{{ map_url }}"
+        allowfullscreen="" aria-hidden="false" tabindex="0">
+    </iframe>
+</div>
 {% endblock %}

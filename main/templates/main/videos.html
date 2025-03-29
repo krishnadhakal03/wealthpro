@@ -1,54 +1,170 @@
 {% extends 'main/base.html' %}
 {% load static %}
-{% block title %}
-    Videos
+
+{% block title %}Videos - Next Generation Wealth Pro{% endblock %}
+
+{% block hero %}
+<!-- Hero Header -->
+<div class="hero-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <h1>Educational Videos</h1>
+                <p>Explore our collection of informative videos on wealth management and financial planning.</p>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
- {% block content %}
-
-              <!-- Direct Video Gallery Section -->
-  <section class="video-gallery">
-    <div class="container">
-        <h2 class="section-title">Uploaded Video Gallery</h2>
-        {% for video in directVideo %}
-        <div class="video">
-        <p><h3><b>Title: </b> {{ video.title }}</h3></p>
-            <video width="560" height="315" controls>
-                <source src="{{ video.video.url }}" type="video/mp4">
-                Your browser does not support the video tag.
-            </video>
-            <p><b>Description: </b> {{ video.description }}</p>
-        </div>
-        {% empty %}
-        <p>No videos available.</p>
-        {% endfor %}
-    </div>
-</section>
-
-    <!-- Youtube Video Gallery Section -->
-   <section class="video-gallery">
-    <div class="container">
-        <h2 class="section-title">YouTube Gallery</h2>
-        {% for video in vid %}
-            <div class="video">
-                <h3><b>Title: </b> {{ video.title }}</h3> <!-- Use heading tags for titles -->
-                <iframe
-                    width="560"
-                    height="315"
-                    src="{{ video.url }}"
-                    title="{{ video.title }}"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    referrerpolicy="strict-origin-when-cross-origin"
-                    allowfullscreen>
-                </iframe>
-                <p><b>Description: </b> {{ video.desc }}</p>
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12">
+            <div class="section-title">
+                <h6>WATCH & LEARN</h6>
+                <h1>Financial Education Videos</h1>
             </div>
-        {% empty %}
-            <p>No videos available.</p>
-        {% endfor %}
+        </div>
     </div>
-</section>
 
-
-
+    <!-- YouTube Videos Section -->
+    <div class="row">
+        <div class="col-12">
+            <div class="section-title">
+                <h6>FEATURED</h6>
+                <h1>YouTube Videos</h1>
+                <p class="text-muted">Watch our curated collection of financial education videos</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row g-4 mb-5">
+        {% if vid %}
+            {% for video in vid %}
+            <div class="col-lg-6 mb-4">
+                <div class="video-item shadow-sm rounded overflow-hidden">
+                    <div class="embed-responsive embed-responsive-16by9">
+                        {% if video.url %}
+                            {% if 'youtube.com/watch?v=' in video.url %}
+                                {% with video_id=video.url|cut:"https://www.youtube.com/watch?v=" %}
+                                <iframe width="100%" height="315" 
+                                    src="https://www.youtube.com/embed/{{ video_id|cut:"&"|slice:":11" }}" 
+                                    frameborder="0" 
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                    allowfullscreen>
+                                </iframe>
+                                {% endwith %}
+                            {% elif 'youtu.be/' in video.url %}
+                                {% with video_id=video.url|cut:"https://youtu.be/" %}
+                                <iframe width="100%" height="315" 
+                                    src="https://www.youtube.com/embed/{{ video_id|cut:"?"|slice:":11" }}" 
+                                    frameborder="0" 
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                    allowfullscreen>
+                                </iframe>
+                                {% endwith %}
+                            {% elif 'youtube.com/embed/' in video.url %}
+                                <iframe width="100%" height="315" 
+                                    src="{{ video.url }}" 
+                                    frameborder="0" 
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                    allowfullscreen>
+                                </iframe>
+                            {% elif 'vimeo.com' in video.url %}
+                                {% if 'vimeo.com/video/' in video.url %}
+                                    {% with video_id=video.url|cut:"https://vimeo.com/video/" %}
+                                    <iframe width="100%" height="315" 
+                                        src="https://player.vimeo.com/video/{{ video_id }}" 
+                                        frameborder="0" 
+                                        allow="autoplay; fullscreen; picture-in-picture" 
+                                        allowfullscreen>
+                                    </iframe>
+                                    {% endwith %}
+                                {% else %}
+                                    {% with video_id=video.url|cut:"https://vimeo.com/" %}
+                                    <iframe width="100%" height="315" 
+                                        src="https://player.vimeo.com/video/{{ video_id }}" 
+                                        frameborder="0" 
+                                        allow="autoplay; fullscreen; picture-in-picture" 
+                                        allowfullscreen>
+                                    </iframe>
+                                    {% endwith %}
+                                {% endif %}
+                            {% else %}
+                                <div class="p-4 bg-light text-center">
+                                    <i class="fa fa-video fa-3x text-primary mb-3"></i>
+                                    <p>Video URL format not supported</p>
+                                    <a href="{{ video.url }}" target="_blank" class="btn btn-primary btn-sm">View Video</a>
+                                </div>
+                            {% endif %}
+                        {% else %}
+                            <div class="p-4 bg-light text-center">
+                                <i class="fa fa-video fa-3x text-primary mb-3"></i>
+                                <p>Video URL not available</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="video-title p-4 bg-white">
+                        <h4>{{ video.title }}</h4>
+                        <p>{{ video.desc }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12 text-center mb-5">
+                <div class="p-4 bg-light rounded">
+                    <i class="fa fa-video fa-3x text-primary mb-3"></i>
+                    <p>No YouTube videos are currently available.</p>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+    
+    <!-- Directly Uploaded Videos Section -->
+    <div class="row">
+        <div class="col-12">
+            <div class="section-title">
+                <h6>UPLOADED</h6>
+                <h1>Direct Video Content</h1>
+                <p class="text-muted">Watch our original uploaded video content</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row g-4">
+        {% if directVideo %}
+            {% for video in directVideo %}
+            <div class="col-lg-6 mb-4">
+                <div class="video-item shadow-sm rounded overflow-hidden">
+                    {% if video.video %}
+                    <video width="100%" height="315" controls>
+                        <source src="{{ video.video.url }}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                    {% else %}
+                    <div class="p-4 bg-light text-center">
+                        <i class="fa fa-film fa-3x text-primary mb-3"></i>
+                        <p>Video file not available</p>
+                    </div>
+                    {% endif %}
+                    <div class="video-title p-4 bg-white">
+                        <h4>{{ video.title }}</h4>
+                        <p>{{ video.description }}</p>
+                        <small class="text-muted">Uploaded: {{ video.uploaded_at|date:"F d, Y" }}</small>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12 text-center">
+                <div class="p-4 bg-light rounded">
+                    <i class="fa fa-film fa-3x text-primary mb-3"></i>
+                    <p>No direct uploads are currently available.</p>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
 {% endblock %}
