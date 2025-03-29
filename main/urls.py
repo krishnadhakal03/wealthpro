@@ -20,4 +20,10 @@ path('api/zoom-slots/', views.get_zoom_slots, name='get_zoom_slots'),
 path('api/book-zoom-slot/', views.book_zoom_slot, name='book_zoom_slot'),
 ]
 
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+# In development, Django can serve media files
+# In production, these should be served by the web server
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+else:
+    # Still allow Django to serve media in production until proper web server is configured
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
