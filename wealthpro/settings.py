@@ -174,5 +174,25 @@ CSRF_TRUSTED_ORIGINS = [
 if 'CSRF_TRUSTED_ORIGINS' in os.environ:
     CSRF_TRUSTED_ORIGINS += env.list('CSRF_TRUSTED_ORIGINS')
 
+# Caching Configuration
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-wealthpro-cache',
+        'TIMEOUT': 3600,  # 1 hour default timeout
+        'OPTIONS': {
+            'MAX_ENTRIES': 1000  # Maximum number of entries in cache
+        }
+    }
+}
+
+# Cache middleware settings
+CACHE_MIDDLEWARE_ALIAS = 'default'
+CACHE_MIDDLEWARE_SECONDS = 600  # 10 minutes
+CACHE_MIDDLEWARE_KEY_PREFIX = 'wealthpro'
+
+# Optimize database connections
+DATABASES['default']['CONN_MAX_AGE'] = 600  # Keep connections alive for 10 minutes
+
 
 

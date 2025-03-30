@@ -12,16 +12,15 @@ class MainConfig(AppConfig):
         Initialize application when Django starts.
         This is the place to perform startup operations.
         """
-        # Initialize settings registry
+        # Import settings registry but don't force loading
         try:
             # Import here to avoid circular imports
             from .settings_registry import settings_registry
             
-            # Force load settings
-            settings_registry.reload_settings()
-            logger.info("Settings registry initialized")
+            # Log that the registry is imported but not loaded
+            logger.info("Settings registry initialized - will load on first access")
         except Exception as e:
-            logger.error(f"Error initializing settings registry: {str(e)}")
+            logger.error(f"Error importing settings registry: {str(e)}")
         
         # Other startup operations can go here
         pass

@@ -130,9 +130,8 @@ def get_maps_settings():
 
 def get_business_hours():
     """
-    Get business hours settings from the SiteSettings model or fallback to defaults.
-    
-    Returns a dictionary with all business hours settings.
+    Get the business hours settings from registry.
+    Returns a dictionary with days of week and their hours.
     """
     # Default business hours
     business_hours = {
