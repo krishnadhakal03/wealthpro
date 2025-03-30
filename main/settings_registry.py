@@ -27,6 +27,16 @@ class SettingsRegistry:
         return cls._instance
     
     def __init__(self):
+        # Don't automatically load settings on initialization
+        # This avoids database access during Django startup
+        pass
+    
+    def is_ready(self):
+        """Check if the registry has been initialized"""
+        return SettingsRegistry._initialized
+    
+    def _ensure_initialized(self):
+        """Ensure settings are loaded when needed, not at import time"""
         if not SettingsRegistry._initialized:
             self.reload_settings()
             SettingsRegistry._initialized = True
@@ -41,6 +51,7 @@ class SettingsRegistry:
             if cached_settings:
                 self._settings_cache = cached_settings
                 logger.debug("Settings loaded from cache")
+                SettingsRegistry._initialized = True
                 return
                 
             # If not in cache, load from DB
@@ -97,6 +108,7 @@ class SettingsRegistry:
             cache.set(SETTINGS_CACHE_KEY, settings_dict, SETTINGS_CACHE_TIMEOUT)
             
             logger.debug("Settings loaded from database and cached")
+            SettingsRegistry._initialized = True
             
         except Exception as e:
             logger.error(f"Error loading settings from database: {str(e)}")
@@ -105,19 +117,22 @@ class SettingsRegistry:
     
     def get(self, key, default=None):
         """Get a setting value by key with optional default"""
+        self._ensure_initialized()
         return self._settings_cache.get(key, default)
     
     def get_all(self):
         """Get all settings as a dictionary"""
+        self._ensure_initialized()
         return self._settings_cache.copy()
     
     def clear_cache(self):
         """Clear the settings cache"""
         cache.delete(SETTINGS_CACHE_KEY)
         self._settings_cache = {}
+        SettingsRegistry._initialized = False
         logger.debug("Settings cache cleared")
 
-# Singleton instance
+# Singleton instance - just create the instance but don't load settings yet
 settings_registry = SettingsRegistry()
 
 def get_setting(key, default=None):
