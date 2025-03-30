@@ -25,6 +25,10 @@ SECRET_KEY = 'django-insecure-w_anj&11r^lm5@sltv*t6q(&im7kch!uj*p4*v-0xd5j^61csc
 DEBUG = False
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'wealthpro-c4ghhwhkh6evbwdu.centralus-01.azurewebsites.net', 'nextgenerationwealthpro.com', 'www.nextgenerationwealthpro.com', '13.59.63.39']
+# Accept some malformed requests
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+USE_X_FORWARDED_HOST = True
+USE_X_FORWARDED_PORT = True
 
 # Application definition
 
