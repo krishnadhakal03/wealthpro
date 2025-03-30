@@ -122,14 +122,32 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Email settings
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'           # Gmail SMTP server
-EMAIL_PORT = 587                        # Port for TLS (secure email transmission)
-EMAIL_USE_TLS = True                    # Use TLS for security
-EMAIL_HOST_USER = 'krishna.dhakal03@gmail.com'  # Your Gmail email address
-EMAIL_HOST_PASSWORD = 'swjf ceoe adxv engz'     # Your Gmail App Password
-DEFAULT_FROM_EMAIL = 'krishna.dhakal03@gmail.com'
-CONTACT_EMAIL = 'krishna.dhakal03@gmail.com'
+# AWS SES configuration
+AWS_REGION = 'us-east-2'  # US East (Ohio) region
+USE_SES = True  # Set to False to disable SES and use SMTP only
+
+# Custom backend that chooses between SES and SMTP
+EMAIL_BACKEND = 'main.email_backend.SESEmailBackend'
+
+# AWS SES settings - values should be provided by AWS IAM
+EMAIL_HOST = 'email-smtp.us-east-2.amazonaws.com'  # SES SMTP endpoint
+EMAIL_PORT = 587                                   # Port for TLS
+EMAIL_USE_TLS = True                              # Use TLS for security
+EMAIL_HOST_USER = ''                              # SES SMTP username (to be filled)
+EMAIL_HOST_PASSWORD = ''                          # SES SMTP password (to be filled)
+DEFAULT_FROM_EMAIL = 'info@nextgenerationwealthpro.com'  # Verified sender email
+CONTACT_EMAIL = 'krishna.dhakal03@gmail.com'      # Where contact form emails go
+
+# Fallback to regular SMTP if SES is disabled or credentials are not available
+if not USE_SES or not EMAIL_HOST_USER or not EMAIL_HOST_PASSWORD:
+    # Fallback email settings
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST = 'smtp.gmail.com'                 # Gmail SMTP server
+    EMAIL_PORT = 587                              # Port for TLS
+    EMAIL_USE_TLS = True                          # Use TLS for security
+    EMAIL_HOST_USER = 'krishna.dhakal03@gmail.com'  # Your Gmail email address
+    EMAIL_HOST_PASSWORD = 'swjf ceoe adxv engz'   # Your Gmail App Password
+    DEFAULT_FROM_EMAIL = 'krishna.dhakal03@gmail.com'
 
 # Media files
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
