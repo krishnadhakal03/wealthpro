@@ -11,37 +11,20 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 import os
 from pathlib import Path
-import environ
-
-# Initialize environ
-env = environ.Env(
-    # set casting, default value
-    DEBUG=(bool, False),
-    ALLOWED_HOSTS=(list, ['localhost', '127.0.0.1']),
-    EMAIL_HOST_PASSWORD=(str, ''),
-    EMAIL_HOST_USER=(str, ''),
-    SECRET_KEY=(str, 'django-insecure-w_anj&11r^lm5@sltv*t6q(&im7kch!uj*p4*v-0xd5j^61csc'),
-)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
-# Take environment variables from .env file if it exists
-environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env('SECRET_KEY')
+SECRET_KEY = 'django-insecure-w_anj&11r^lm5@sltv*t6q(&im7kch!uj*p4*v-0xd5j^61csc'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env('DEBUG')
+DEBUG = False
 
-ALLOWED_HOSTS = env.list('ALLOWED_HOSTS') + [
-    'wealthpro-c4ghhwhkh6evbwdu.centralus-01.azurewebsites.net',
-    'nextgenerationwealthpro.com',
-]
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'wealthpro-c4ghhwhkh6evbwdu.centralus-01.azurewebsites.net', 'nextgenerationwealthpro.com', 'www.nextgenerationwealthpro.com', '13.59.63.39']
 
 # Application definition
 
@@ -97,12 +80,6 @@ DATABASES = {
     }
 }
 
-# If DATABASE_URL is defined, use that instead (for PostgreSQL on production)
-if 'DATABASE_URL' in os.environ:
-    DATABASES = {
-        'default': env.db(),
-    }
-
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
@@ -148,7 +125,7 @@ EMAIL_USE_TLS = True                    # Use TLS for security
 EMAIL_HOST_USER = 'krishna.dhakal03@gmail.com'  # Your Gmail email address
 EMAIL_HOST_PASSWORD = 'swjf ceoe adxv engz'     # Your Gmail App Password
 DEFAULT_FROM_EMAIL = 'krishna.dhakal03@gmail.com'
-CONTACT_EMAIL = env('EMAIL_HOST_USER')
+CONTACT_EMAIL = 'krishna.dhakal03@gmail.com'
 
 # Media files
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
@@ -158,7 +135,7 @@ MEDIA_URL = '/media/'
 if not DEBUG:
     CSRF_COOKIE_SECURE = True
     SESSION_COOKIE_SECURE = True
-    SECURE_SSL_REDIRECT = env.bool('SECURE_SSL_REDIRECT', default=True)
+    SECURE_SSL_REDIRECT = True
     SECURE_HSTS_SECONDS = 31536000  # 1 year
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
@@ -167,12 +144,8 @@ if not DEBUG:
 # Trusted origins for CSRF
 CSRF_TRUSTED_ORIGINS = [
     'https://nextgenerationwealthpro.com',
+    'https://www.nextgenerationwealthpro.com',
     'https://wealthpro-c4ghhwhkh6evbwdu.centralus-01.azurewebsites.net',
+    'http://13.59.63.39',
+    'https://13.59.63.39',
 ]
-
-# Add any custom domains or EC2 instances here
-if 'CSRF_TRUSTED_ORIGINS' in os.environ:
-    CSRF_TRUSTED_ORIGINS += env.list('CSRF_TRUSTED_ORIGINS')
-
-
-
