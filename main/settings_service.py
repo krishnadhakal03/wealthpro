@@ -32,7 +32,7 @@ def get_email_settings():
     
     # Override with values from database if available
     if settings_registry.is_ready():
-        db_settings = settings_registry.get_settings()
+        db_settings = settings_registry.get_all()
         if db_settings:
             email_settings.update({
                 'EMAIL_HOST': db_settings.get('EMAIL_HOST', email_settings['EMAIL_HOST']),
@@ -64,7 +64,7 @@ def get_security_settings():
     
     # Override with values from database if available
     if settings_registry.is_ready():
-        db_settings = settings_registry.get_settings()
+        db_settings = settings_registry.get_all()
         if db_settings:
             security_settings.update({
                 'CSRF_PROTECTION': db_settings.get('ENABLE_CSRF_PROTECTION', security_settings['CSRF_PROTECTION']),
@@ -108,7 +108,7 @@ def get_social_media_urls():
     
     # Get values from database if available
     if settings_registry.is_ready():
-        db_settings = settings_registry.get_settings()
+        db_settings = settings_registry.get_all()
         if db_settings:
             social_media.update({
                 'FACEBOOK_URL': db_settings.get('FACEBOOK_URL', ''),
@@ -142,7 +142,7 @@ def get_business_hours():
     
     # Override with values from database if available
     if settings_registry.is_ready():
-        db_settings = settings_registry.get_settings()
+        db_settings = settings_registry.get_all()
         if db_settings:
             business_hours.update({
                 'WEEKDAYS': db_settings.get('BUSINESS_HOURS_WEEKDAYS', business_hours['WEEKDAYS']),
