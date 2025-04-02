@@ -26,7 +26,7 @@ DEBUG = False
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'wealthpro-c4ghhwhkh6evbwdu.centralus-01.azurewebsites.net', 'nextgenerationwealthpro.com', 'www.nextgenerationwealthpro.com', '13.59.63.39']
 # Accept some malformed requests
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_PROXY_SSL_HEADER = None
 USE_X_FORWARDED_HOST = True
 USE_X_FORWARDED_PORT = True
 
@@ -155,12 +155,12 @@ MEDIA_URL = '/media/'
 
 # Security settings - enabled in production only
 if not DEBUG:
-    CSRF_COOKIE_SECURE = True
-    SESSION_COOKIE_SECURE = True
-    SECURE_SSL_REDIRECT = True
-    SECURE_HSTS_SECONDS = 31536000  # 1 year
-    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-    SECURE_HSTS_PRELOAD = True
+    CSRF_COOKIE_SECURE = False
+    SESSION_COOKIE_SECURE = False
+    SECURE_SSL_REDIRECT = False
+    SECURE_HSTS_SECONDS = 0
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = False
+    SECURE_HSTS_PRELOAD = False
     SECURE_CONTENT_TYPE_NOSNIFF = True
 
 # Trusted origins for CSRF

@@ -1,0 +1,18 @@
+# robots.txt for Next Generation Wealth Pro
+
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+
+# Prevent crawling of form submissions
+Disallow: /*?*
+
+# Allow all bots to access CSS, JS, and images
+Allow: /static/css/
+Allow: /static/js/
+Allow: /static/images/
+Allow: /media/images/
+
+# Sitemap location
+Sitemap: https://nextgenerationwealthpro.com/sitemap.xml 
