@@ -30,6 +30,243 @@ from main.settings_service import get_maps_settings, get_business_hours
 
 logger = logging.getLogger(__name__)
 
+# Helper function for insurance calculator
+def get_age_bracket(age):
+    """
+    Returns the appropriate age bracket for insurance calculations based on age.
+    """
+    if age < 18:
+        return "0-17"
+    elif age <= 29:
+        return "18-29"
+    elif age <= 39:
+        return "30-39"
+    elif age <= 49:
+        return "40-49"
+    elif age <= 59:
+        return "50-59"
+    elif age <= 69:
+        return "60-69"
+    else:
+        return "70+"
+        
+# Helper function for maturity value calculation
+def calculate_maturity_value(premium, years, annual_return_rate):
+    """
+    Calculate the maturity value of an investment based on annual premium, 
+    years, and annual return rate.
+    """
+    maturity_value = Decimal('0')
+    annual_rate = Decimal(str(annual_return_rate)) / Decimal('100')
+    
+    for year in range(1, int(years) + 1):
+        # Add this year's premium
+        maturity_value += premium
+        # Apply return rate to current total
+        maturity_value = maturity_value * (Decimal('1') + annual_rate)
+        
+    return maturity_value
+
+# Helper function for premium calculation
+def calculate_premium(base_rate, coverage_amount, term_years, insurance_type, age, gender, request_data):
+    """
+    Calculate insurance premium based on base rate and other factors
+    """
+    monthly_premium = (base_rate * coverage_amount) / 1000 / 12
+    
+    # Apply term length factor
+    if insurance_type.name.lower() == 'life':
+        # Life insurance has different term factors
+        if term_years <= 5:
+            term_factor = 1.0
+        elif term_years <= 10:
+            term_factor = 0.95
+        elif term_years <= 20:
+            term_factor = 0.9
+        else:
+            term_factor = 0.85
+    else:
+        # Other insurance types
+        if term_years < 1:
+            term_factor = 1.1  # 6 month policies have 10% surcharge
+        elif term_years == 1:
+            term_factor = 1.0
+        else:
+            term_factor = 0.9  # Multi-year policies get 10% discount
+            
+    monthly_premium *= Decimal(str(term_factor))
+    
+    # Apply risk factors based on insurance type
+    insurance_type_name = insurance_type.name.lower()
+    
+    if insurance_type_name == 'life':
+        # Smoker status
+        smoker_status = request_data.get('smoker_status', 'NS')
+        if smoker_status == 'Occasional':
+            monthly_premium *= Decimal('1.25')
+        elif smoker_status == 'Regular':
+            monthly_premium *= Decimal('1.75')
+        elif smoker_status == 'Heavy':
+            monthly_premium *= Decimal('2.5')
+            
+        # BMI category
+        bmi_category = request_data.get('bmi_category', 'Normal')
+        if bmi_category == 'Overweight':
+            monthly_premium *= Decimal('1.15')
+        elif bmi_category == 'Obese':
+            monthly_premium *= Decimal('1.5')
+        elif bmi_category == 'Severely obese':
+            monthly_premium *= Decimal('2.0')
+            
+        # Family history
+        family_history = request_data.get('family_history', 'None')
+        if family_history == 'Cancer':
+            monthly_premium *= Decimal('1.25')
+        elif family_history == 'Heart':
+            monthly_premium *= Decimal('1.3')
+        elif family_history == 'Diabetes':
+            monthly_premium *= Decimal('1.2')
+        elif family_history == 'Multiple':
+            monthly_premium *= Decimal('1.5')
+            
+        # Occupation risk
+        occupation_risk = request_data.get('occupation_risk', 'Low')
+        if occupation_risk == 'Moderate':
+            monthly_premium *= Decimal('1.1')
+        elif occupation_risk == 'High':
+            monthly_premium *= Decimal('1.35')
+        elif occupation_risk == 'Very high':
+            monthly_premium *= Decimal('1.75')
+            
+    elif insurance_type_name == 'health':
+        # Pre-existing conditions
+        health_condition = request_data.get('health_condition', 'None')
+        if health_condition == 'Diabetes':
+            monthly_premium *= Decimal('1.35')
+        elif health_condition == 'Hypertension':
+            monthly_premium *= Decimal('1.25')
+        elif health_condition == 'Heart Disease':
+            monthly_premium *= Decimal('1.65')
+        elif health_condition == 'Cancer':
+            monthly_premium *= Decimal('1.75')
+        elif health_condition == 'Multiple':
+            monthly_premium *= Decimal('2.0')
+            
+        # Lifestyle
+        lifestyle = request_data.get('lifestyle', 'Good')
+        if lifestyle == 'Excellent':
+            monthly_premium *= Decimal('0.9')
+        elif lifestyle == 'Fair':
+            monthly_premium *= Decimal('1.15')
+        elif lifestyle == 'Poor':
+            monthly_premium *= Decimal('1.35')
+            
+        # Prescription medications
+        prescription_meds = request_data.get('prescription_meds', 'None')
+        if prescription_meds == '1-2':
+            monthly_premium *= Decimal('1.15')
+        elif prescription_meds == '3-5':
+            monthly_premium *= Decimal('1.35')
+        elif prescription_meds == 'More than 5':
+            monthly_premium *= Decimal('1.75')
+            
+        # Coverage level
+        coverage_level = request_data.get('coverage_level', 'Silver')
+        if coverage_level == 'Bronze':
+            monthly_premium *= Decimal('0.8')
+        elif coverage_level == 'Gold':
+            monthly_premium *= Decimal('1.2')
+        elif coverage_level == 'Platinum':
+            monthly_premium *= Decimal('1.5')
+            
+    elif insurance_type_name == 'auto':
+        # Vehicle type
+        vehicle_type = request_data.get('vehicle_type', 'Mid-size')
+        if vehicle_type == 'Economy':
+            monthly_premium *= Decimal('0.9')
+        elif vehicle_type == 'SUV':
+            monthly_premium *= Decimal('1.2')
+        elif vehicle_type == 'Luxury':
+            monthly_premium *= Decimal('1.5')
+        elif vehicle_type == 'Sports':
+            monthly_premium *= Decimal('1.7')
+        elif vehicle_type == 'High-performance':
+            monthly_premium *= Decimal('2.0')
+            
+        # Driving record
+        driving_record = request_data.get('driving_record', 'Clean')
+        if driving_record == 'Minor':
+            monthly_premium *= Decimal('1.25')
+        elif driving_record == 'Major':
+            monthly_premium *= Decimal('1.75')
+        elif driving_record == 'DUI':
+            monthly_premium *= Decimal('2.5')
+        elif driving_record == 'Multiple':
+            monthly_premium *= Decimal('3.0')
+            
+        # Annual mileage
+        annual_mileage = request_data.get('annual_mileage', '5000-10000')
+        if annual_mileage == 'Under 5000':
+            monthly_premium *= Decimal('0.85')
+        elif annual_mileage == '10001-15000':
+            monthly_premium *= Decimal('1.1')
+        elif annual_mileage == '15001-20000':
+            monthly_premium *= Decimal('1.25')
+        elif annual_mileage == 'Over 20000':
+            monthly_premium *= Decimal('1.4')
+            
+        # Vehicle age
+        vehicle_age = request_data.get('vehicle_age', 'Recent')
+        if vehicle_age == 'New':
+            monthly_premium *= Decimal('1.2')
+        elif vehicle_age == 'Older':
+            monthly_premium *= Decimal('0.9')
+        elif vehicle_age == 'Vintage':
+            monthly_premium *= Decimal('0.8')
+            
+    elif insurance_type_name == 'home':
+        # Construction type
+        construction_type = request_data.get('construction_type', 'Wood')
+        if construction_type == 'Brick':
+            monthly_premium *= Decimal('0.9')
+        elif construction_type == 'Steel':
+            monthly_premium *= Decimal('0.85')
+        elif construction_type == 'Mixed':
+            monthly_premium *= Decimal('0.95')
+            
+        # Roof age
+        roof_age = request_data.get('roof_age', 'Mid')
+        if roof_age == 'New':
+            monthly_premium *= Decimal('0.9')
+        elif roof_age == 'Older':
+            monthly_premium *= Decimal('1.25')
+        elif roof_age == 'Very old':
+            monthly_premium *= Decimal('1.6')
+            
+        # Location risk
+        location_risk = request_data.get('location_risk', 'Low')
+        if location_risk == 'Moderate':
+            monthly_premium *= Decimal('1.25')
+        elif location_risk == 'Flood':
+            monthly_premium *= Decimal('1.75')
+        elif location_risk == 'Wildfire':
+            monthly_premium *= Decimal('1.9')
+        elif location_risk == 'Hurricane':
+            monthly_premium *= Decimal('2.0')
+        elif location_risk == 'Multiple':
+            monthly_premium *= Decimal('2.5')
+            
+        # Security features
+        security_features = request_data.get('security_features', 'Basic')
+        if security_features == 'Comprehensive':
+            monthly_premium *= Decimal('0.8')
+        elif security_features == 'Minimal':
+            monthly_premium *= Decimal('1.15')
+        elif security_features == 'None':
+            monthly_premium *= Decimal('1.3')
+            
+    return monthly_premium
+
 def home(request):
     info_sections = HomeInfoSection.objects.all()
     slider_images = HomeSliderImage.objects.all()
@@ -563,494 +800,339 @@ def services(request):
 
 # Insurance Calculator View
 def insurance_calculator(request):
+    logger.debug("Insurance calculator view called")
+    # Get all insurance types for display
     insurance_types = InsuranceType.objects.all()
-    
-    # Get all states for the dropdown
-    states = dict(StateRateAdjustment.STATE_CHOICES)
-    
-    # Default empty context
-    context = {
-        'insurance_types': insurance_types,
-        'states': states,
-        'result': None,
+    states = {
+        'AL': 'Alabama', 'AK': 'Alaska', 'AZ': 'Arizona', 'AR': 'Arkansas', 
+        'CA': 'California', 'CO': 'Colorado', 'CT': 'Connecticut', 'DE': 'Delaware',
+        'FL': 'Florida', 'GA': 'Georgia', 'HI': 'Hawaii', 'ID': 'Idaho', 
+        'IL': 'Illinois', 'IN': 'Indiana', 'IA': 'Iowa', 'KS': 'Kansas',
+        'KY': 'Kentucky', 'LA': 'Louisiana', 'ME': 'Maine', 'MD': 'Maryland',
+        'MA': 'Massachusetts', 'MI': 'Michigan', 'MN': 'Minnesota', 'MS': 'Mississippi',
+        'MO': 'Missouri', 'MT': 'Montana', 'NE': 'Nebraska', 'NV': 'Nevada',
+        'NH': 'New Hampshire', 'NJ': 'New Jersey', 'NM': 'New Mexico', 'NY': 'New York',
+        'NC': 'North Carolina', 'ND': 'North Dakota', 'OH': 'Ohio', 'OK': 'Oklahoma',
+        'OR': 'Oregon', 'PA': 'Pennsylvania', 'RI': 'Rhode Island', 'SC': 'South Carolina',
+        'SD': 'South Dakota', 'TN': 'Tennessee', 'TX': 'Texas', 'UT': 'Utah',
+        'VT': 'Vermont', 'VA': 'Virginia', 'WA': 'Washington', 'WV': 'West Virginia',
+        'WI': 'Wisconsin', 'WY': 'Wyoming', 'DC': 'District of Columbia'
     }
     
-    if request.method == 'POST':
+    if request.method == "POST":
+        logger.debug(f"POST data received: {request.POST}")
+        
+        # Get the insurance type ID from the POST data
+        insurance_type_id = request.POST.get('insurance_type')
+        
+        if not insurance_type_id:
+            return render(request, "main/insurance_calculator.html", {
+                "insurance_types": insurance_types,
+                "states": states,
+                "error": "Please select an insurance type."
+            })
+        
         try:
-            # Extract form data
-            insurance_type_id = request.POST.get('insurance_type')
-            age = int(request.POST.get('age', 0))
-            gender = request.POST.get('gender', 'ANY')
-            coverage_amount = Decimal(request.POST.get('coverage_amount', 0))
-            term_years = int(request.POST.get('term_years', 10))
-            selected_state = request.POST.get('state', '')
-            
-            # Get insurance type
+            # Get the insurance type object
             insurance_type = InsuranceType.objects.get(id=insurance_type_id)
             insurance_type_name = insurance_type.name.lower()
             
-            # Additional inputs based on insurance type
-            # Life insurance
-            smoker_status = request.POST.get('smoker_status', 'NS')
-            bmi_category = request.POST.get('bmi_category', 'Normal')
-            family_history = request.POST.get('family_history', 'None')
-            occupation_risk = request.POST.get('occupation_risk', 'Low')
+            # Get coverage amount and term based on insurance type
+            coverage_amount_field = f"{insurance_type_name}_coverage_amount"
+            term_years_field = f"{insurance_type_name}_term_years"
             
-            # Health insurance
-            health_condition = request.POST.get('health_condition', 'None')
-            lifestyle = request.POST.get('lifestyle', 'Good')
-            prescription_meds = request.POST.get('prescription_meds', 'None')
-            coverage_level = request.POST.get('coverage_level', 'Silver')
+            coverage_amount = request.POST.get(coverage_amount_field)
+            term_years = request.POST.get(term_years_field)
             
-            # Auto insurance
-            vehicle_value = request.POST.get('vehicle_value', 0)
-            vehicle_type = request.POST.get('vehicle_type', 'Mid-size')
-            driving_record = request.POST.get('driving_record', 'Clean')
-            annual_mileage = request.POST.get('annual_mileage', '5000-10000')
-            vehicle_age = request.POST.get('vehicle_age', 'Recent')
+            if not coverage_amount or not term_years:
+                return render(request, "main/insurance_calculator.html", {
+                    "insurance_types": insurance_types,
+                    "states": states, 
+                    "error": "Please provide both coverage amount and term years."
+                })
             
-            # Home insurance
-            home_value = request.POST.get('home_value', 0)
-            construction_type = request.POST.get('construction_type', 'Wood')
-            roof_age = request.POST.get('roof_age', 'Mid')
-            location_risk = request.POST.get('location_risk', 'Low')
-            security_features = request.POST.get('security_features', 'Basic')
+            # Get basic info
+            age = request.POST.get('age')
+            gender = request.POST.get('gender')
+            state = request.POST.get('state')
             
-            # Find applicable base rate
-            base_rate = InsuranceBaseRate.objects.filter(
-                insurance_type=insurance_type,
-                min_age__lte=age,
-                max_age__gte=age
-            ).filter(
-                models.Q(gender=gender) | models.Q(gender='ANY')
-            ).first()
+            if not age or not gender:
+                return render(request, "main/insurance_calculator.html", {
+                    "insurance_types": insurance_types, 
+                    "states": states,
+                    "error": "Please enter your age and gender."
+                })
             
-            if base_rate:
-                # Calculate premium - convert to Decimal to avoid type mismatch
-                monthly_premium = base_rate.base_monthly_rate + (coverage_amount / Decimal('1000') * base_rate.rate_per_thousand)
-                
-                # Get risk factors that apply to this insurance type
-                risk_factors = {}
-                premium_adjustments = []
-                
-                # Life insurance - use CSO tables and risk factors
-                if insurance_type_name == 'life':
-                    # Get CSO mortality table rate
-                    smoker_status_db = smoker_status if smoker_status in ['NS', 'SM'] else 'ANY'
-                    cso_table = CSOMortalityTable.objects.filter(
-                        age=age,
-                        gender=gender,
-                        smoker_status=smoker_status_db
-                    ).first()
-                    
-                    if cso_table:
-                        # Use the mortality rate directly - more accurate than our earlier approximation
-                        # CSO rates are per 1,000, so we normalize
-                        mortality_factor = cso_table.mortality_rate / Decimal('1000')
-                        monthly_premium *= (Decimal('1.0') + mortality_factor)
-                        premium_adjustments.append({
-                            'name': 'CSO Mortality Rate',
-                            'factor': f"{float(mortality_factor):.4f}",
-                            'description': f"Based on 2017 CSO Mortality Table for {gender}, age {age}"
-                        })
-                    else:
-                        # Fallback to basic mortality adjustment if no table data
-                        if age < 30:
-                            mortality_factor = Decimal('0.95')
-                        elif age < 50:
-                            mortality_factor = Decimal('1.0')
-                        elif age < 65:
-                            mortality_factor = Decimal('1.15')
-                        else:
-                            mortality_factor = Decimal('1.35')
-                        
-                        if gender == 'F':
-                            mortality_factor *= Decimal('0.9')
-                        
-                        monthly_premium *= mortality_factor
-                        premium_adjustments.append({
-                            'name': 'Mortality Factor',
-                            'factor': f"{float(mortality_factor):.2f}x",
-                            'description': "Based on age and gender risk assessment"
-                        })
-                    
-                    # Apply additional risk factors
-                    # Smoker status adjustment
-                    if smoker_status != 'NS':
-                        smoker_risk = InsuranceRiskFactor.objects.filter(name='Smoker Status', factor_type='LIFE').first()
-                        if smoker_risk:
-                            smoker_value = RiskFactorValue.objects.filter(risk_factor=smoker_risk, value_name__icontains=smoker_status).first()
-                            if smoker_value:
-                                monthly_premium *= smoker_value.multiplier
-                                premium_adjustments.append({
-                                    'name': 'Smoker Status',
-                                    'factor': f"{float(smoker_value.multiplier):.2f}x",
-                                    'description': f"Adjustment for {smoker_value.value_name}"
-                                })
-                    
-                    # BMI category
-                    bmi_risk = InsuranceRiskFactor.objects.filter(name='BMI Category', factor_type='LIFE').first()
-                    if bmi_risk:
-                        bmi_value = RiskFactorValue.objects.filter(risk_factor=bmi_risk, value_name__icontains=bmi_category).first()
-                        if bmi_value:
-                            monthly_premium *= bmi_value.multiplier
-                            premium_adjustments.append({
-                                'name': 'BMI Category',
-                                'factor': f"{float(bmi_value.multiplier):.2f}x",
-                                'description': f"Adjustment for {bmi_value.value_name}"
-                            })
-                    
-                    # Family history
-                    if family_history != 'None':
-                        family_risk = InsuranceRiskFactor.objects.filter(name='Family History', factor_type='LIFE').first()
-                        if family_risk:
-                            family_value = RiskFactorValue.objects.filter(risk_factor=family_risk, value_name__icontains=family_history).first()
-                            if family_value:
-                                monthly_premium *= family_value.multiplier
-                                premium_adjustments.append({
-                                    'name': 'Family History',
-                                    'factor': f"{float(family_value.multiplier):.2f}x",
-                                    'description': f"Adjustment for {family_value.value_name}"
-                                })
-                    
-                    # Occupation risk
-                    occupation_risk_factor = InsuranceRiskFactor.objects.filter(name='Occupation Risk', factor_type='LIFE').first()
-                    if occupation_risk_factor:
-                        occupation_value = RiskFactorValue.objects.filter(risk_factor=occupation_risk_factor, value_name__icontains=occupation_risk).first()
-                        if occupation_value:
-                            monthly_premium *= occupation_value.multiplier
-                            premium_adjustments.append({
-                                'name': 'Occupation Risk',
-                                'factor': f"{float(occupation_value.multiplier):.2f}x",
-                                'description': f"Adjustment for {occupation_value.value_name}"
-                            })
-                
-                # Health insurance - use health-specific risk factors
-                elif insurance_type_name == 'health':
-                    # Pre-existing conditions
-                    if health_condition != 'None':
-                        condition_risk = InsuranceRiskFactor.objects.filter(name='Pre-existing Conditions', factor_type='HEALTH').first()
-                        if condition_risk:
-                            condition_value = RiskFactorValue.objects.filter(risk_factor=condition_risk, value_name__icontains=health_condition).first()
-                            if condition_value:
-                                monthly_premium *= condition_value.multiplier
-                                premium_adjustments.append({
-                                    'name': 'Pre-existing Condition',
-                                    'factor': f"{float(condition_value.multiplier):.2f}x",
-                                    'description': f"Adjustment for {condition_value.value_name}"
-                                })
-                            else:
-                                # Fallback if specific condition not found
-                                monthly_premium *= Decimal('1.3')
-                                premium_adjustments.append({
-                                    'name': 'Pre-existing Condition',
-                                    'factor': f"1.30x",
-                                    'description': f"Standard adjustment for {health_condition}"
-                                })
-                    
-                    # Lifestyle
-                    lifestyle_risk = InsuranceRiskFactor.objects.filter(name='Lifestyle', factor_type='HEALTH').first()
-                    if lifestyle_risk:
-                        lifestyle_value = RiskFactorValue.objects.filter(risk_factor=lifestyle_risk, value_name=lifestyle).first()
-                        if lifestyle_value:
-                            monthly_premium *= lifestyle_value.multiplier
-                            premium_adjustments.append({
-                                'name': 'Lifestyle',
-                                'factor': f"{float(lifestyle_value.multiplier):.2f}x",
-                                'description': f"Adjustment for {lifestyle_value.value_name} lifestyle"
-                            })
-                    
-                    # Prescription medications
-                    meds_risk = InsuranceRiskFactor.objects.filter(name='Prescription Medications', factor_type='HEALTH').first()
-                    if meds_risk:
-                        meds_value = RiskFactorValue.objects.filter(risk_factor=meds_risk, value_name=prescription_meds).first()
-                        if meds_value:
-                            monthly_premium *= meds_value.multiplier
-                            premium_adjustments.append({
-                                'name': 'Prescription Medications',
-                                'factor': f"{float(meds_value.multiplier):.2f}x",
-                                'description': f"Adjustment for {meds_value.value_name}"
-                            })
-                    
-                    # Coverage level adjustment
-                    coverage_adjustments = {
-                        'Bronze': Decimal('0.8'),
-                        'Silver': Decimal('1.0'),
-                        'Gold': Decimal('1.2'),
-                        'Platinum': Decimal('1.4')
-                    }
-                    
-                    if coverage_level in coverage_adjustments:
-                        monthly_premium *= coverage_adjustments[coverage_level]
-                        premium_adjustments.append({
-                            'name': 'Coverage Level',
-                            'factor': f"{float(coverage_adjustments[coverage_level]):.2f}x",
-                            'description': f"Adjustment for {coverage_level} plan (actuarial value)"
-                        })
-                
-                # Auto insurance - use auto-specific risk factors
-                elif insurance_type_name == 'auto':
-                    # Vehicle value
-                    vehicle_value = Decimal(vehicle_value)
-                    if vehicle_value > Decimal('50000'):
-                        monthly_premium *= Decimal('1.2')
-                        premium_adjustments.append({
-                            'name': 'Vehicle Value',
-                            'factor': f"1.20x",
-                            'description': f"Premium increase for high-value vehicle (${float(vehicle_value):.2f})"
-                        })
-                    
-                    # Vehicle type
-                    vehicle_type_risk = InsuranceRiskFactor.objects.filter(name='Vehicle Type', factor_type='AUTO').first()
-                    if vehicle_type_risk:
-                        vehicle_type_value = RiskFactorValue.objects.filter(risk_factor=vehicle_type_risk, value_name__icontains=vehicle_type).first()
-                        if vehicle_type_value:
-                            monthly_premium *= vehicle_type_value.multiplier
-                            premium_adjustments.append({
-                                'name': 'Vehicle Type',
-                                'factor': f"{float(vehicle_type_value.multiplier):.2f}x",
-                                'description': f"Adjustment for {vehicle_type_value.value_name}"
-                            })
-                    
-                    # Driving record
-                    driving_record_risk = InsuranceRiskFactor.objects.filter(name='Driving Record', factor_type='AUTO').first()
-                    if driving_record_risk:
-                        driving_record_value = RiskFactorValue.objects.filter(risk_factor=driving_record_risk, value_name__icontains=driving_record).first()
-                        if driving_record_value:
-                            monthly_premium *= driving_record_value.multiplier
-                            premium_adjustments.append({
-                                'name': 'Driving Record',
-                                'factor': f"{float(driving_record_value.multiplier):.2f}x",
-                                'description': f"Adjustment for {driving_record_value.value_name}"
-                            })
-                    
-                    # Annual mileage
-                    mileage_risk = InsuranceRiskFactor.objects.filter(name='Annual Mileage', factor_type='AUTO').first()
-                    if mileage_risk:
-                        mileage_value = RiskFactorValue.objects.filter(risk_factor=mileage_risk, value_name__icontains=annual_mileage).first()
-                        if mileage_value:
-                            monthly_premium *= mileage_value.multiplier
-                            premium_adjustments.append({
-                                'name': 'Annual Mileage',
-                                'factor': f"{float(mileage_value.multiplier):.2f}x",
-                                'description': f"Adjustment for {mileage_value.value_name}"
-                            })
-                    
-                    # Vehicle age
-                    vehicle_age_risk = InsuranceRiskFactor.objects.filter(name='Vehicle Age', factor_type='AUTO').first()
-                    if vehicle_age_risk:
-                        vehicle_age_value = RiskFactorValue.objects.filter(risk_factor=vehicle_age_risk, value_name__icontains=vehicle_age).first()
-                        if vehicle_age_value:
-                            monthly_premium *= vehicle_age_value.multiplier
-                            premium_adjustments.append({
-                                'name': 'Vehicle Age',
-                                'factor': f"{float(vehicle_age_value.multiplier):.2f}x",
-                                'description': f"Adjustment for {vehicle_age_value.value_name}"
-                            })
-                
-                # Home insurance - use home-specific risk factors
-                elif insurance_type_name == 'home':
-                    # Home value
-                    home_value = Decimal(home_value)
-                    if home_value > Decimal('500000'):
-                        monthly_premium *= Decimal('1.15')
-                        premium_adjustments.append({
-                            'name': 'Home Value',
-                            'factor': f"1.15x",
-                            'description': f"Premium increase for high-value home (${float(home_value):.2f})"
-                        })
-                    
-                    # Construction type
-                    construction_risk = InsuranceRiskFactor.objects.filter(name='Construction Type', factor_type='HOME').first()
-                    if construction_risk:
-                        construction_value = RiskFactorValue.objects.filter(risk_factor=construction_risk, value_name__icontains=construction_type).first()
-                        if construction_value:
-                            monthly_premium *= construction_value.multiplier
-                            premium_adjustments.append({
-                                'name': 'Construction Type',
-                                'factor': f"{float(construction_value.multiplier):.2f}x",
-                                'description': f"Adjustment for {construction_value.value_name}"
-                            })
-                    
-                    # Roof age
-                    roof_risk = InsuranceRiskFactor.objects.filter(name='Roof Age', factor_type='HOME').first()
-                    if roof_risk:
-                        roof_value = RiskFactorValue.objects.filter(risk_factor=roof_risk, value_name__icontains=roof_age).first()
-                        if roof_value:
-                            monthly_premium *= roof_value.multiplier
-                            premium_adjustments.append({
-                                'name': 'Roof Age',
-                                'factor': f"{float(roof_value.multiplier):.2f}x",
-                                'description': f"Adjustment for {roof_value.value_name}"
-                            })
-                    
-                    # Location risk
-                    location_risk_factor = InsuranceRiskFactor.objects.filter(name='Location Risk', factor_type='HOME').first()
-                    if location_risk_factor:
-                        location_value = RiskFactorValue.objects.filter(risk_factor=location_risk_factor, value_name__icontains=location_risk).first()
-                        if location_value:
-                            monthly_premium *= location_value.multiplier
-                            premium_adjustments.append({
-                                'name': 'Location Risk',
-                                'factor': f"{float(location_value.multiplier):.2f}x",
-                                'description': f"Adjustment for {location_value.value_name}"
-                            })
-                    
-                    # Security features
-                    security_risk = InsuranceRiskFactor.objects.filter(name='Security Features', factor_type='HOME').first()
-                    if security_risk:
-                        security_value = RiskFactorValue.objects.filter(risk_factor=security_risk, value_name__icontains=security_features).first()
-                        if security_value:
-                            monthly_premium *= security_value.multiplier
-                            premium_adjustments.append({
-                                'name': 'Security Features',
-                                'factor': f"{float(security_value.multiplier):.2f}x",
-                                'description': f"Adjustment for {security_value.value_name}"
-                            })
-                
-                # Apply state-specific adjustment if a state was selected
-                state_factor_description = None
-                state_factor_explanation = None
-                
-                if selected_state:
-                    state_adjustment = StateRateAdjustment.objects.filter(
-                        insurance_type=insurance_type,
-                        state=selected_state
-                    ).first()
-                    
-                    if state_adjustment:
-                        monthly_premium *= state_adjustment.rate_multiplier
-                        state_factor_description = f"{state_adjustment.get_state_display()} adjustment: {state_adjustment.rate_multiplier}x"
-                        state_factor_explanation = state_adjustment.description or "State-specific regulatory adjustment"
-                        
-                        premium_adjustments.append({
-                            'name': 'State Adjustment',
-                            'factor': f"{float(state_adjustment.rate_multiplier):.2f}x",
-                            'description': f"Regulatory adjustment for {state_adjustment.get_state_display()}"
-                        })
-                
-                annual_premium = monthly_premium * Decimal('12')
-                
-                # Calculate maturity and returns
-                investment_data = None
-                
-                # Find investment return data for this insurance type and term
-                investment_return = InsuranceInvestmentReturn.objects.filter(
+            try:
+                age = int(age)
+                coverage_amount = Decimal(coverage_amount)
+                term_years = Decimal(term_years)
+            except (ValueError, decimal.InvalidOperation) as e:
+                logger.error(f"Error converting values: {str(e)}")
+                return render(request, "main/insurance_calculator.html", {
+                    "insurance_types": insurance_types, 
+                    "states": states,
+                    "error": "Please enter valid numeric values."
+                })
+            
+            # Get the state name if state is provided
+            state_name = states.get(state) if state else None
+            
+            # Get the base rate for the insurance type, age, gender
+            
+            # Find the base rate
+            try:
+                base_rate = InsuranceBaseRate.objects.get(
                     insurance_type=insurance_type,
-                    term_years=term_years
-                ).first()
-                
-                # If no exact match for term, find closest
-                if not investment_return:
-                    investment_return = InsuranceInvestmentReturn.objects.filter(
-                        insurance_type=insurance_type
-                    ).order_by(models.F('term_years') - term_years)[:1].first()
-                
-                if investment_return:
-                    # Calculate investment returns and maturity value
-                    total_investment = annual_premium * Decimal(str(investment_return.term_years))
-                    annual_return_rate = investment_return.annual_return_rate
+                    min_age__lte=age,
+                    max_age__gte=age,
+                    gender=gender
+                )
+                logger.debug(f"Found exact gender match rate for {insurance_type.name}, age {age}, gender {gender}")
+            except InsuranceBaseRate.DoesNotExist:
+                # Try with gender 'ANY' as fallback for gender-neutral pricing
+                try:
+                    base_rate = InsuranceBaseRate.objects.get(
+                        insurance_type=insurance_type,
+                        min_age__lte=age,
+                        max_age__gte=age,
+                        gender='ANY'
+                    )
+                    logger.debug(f"Using gender-neutral rate for {insurance_type.name}, age {age}")
+                except InsuranceBaseRate.DoesNotExist:
+                    logger.error(f"No base rate found for {insurance_type.name}, age {age}, gender {gender} or ANY")
+                    return render(request, "main/insurance_calculator.html", {
+                        "insurance_types": insurance_types, 
+                        "states": states,
+                        "error": f"Sorry, we couldn't calculate a premium for your profile. Please contact our agents for a personalized quote."
+                    })
+            
+            logger.debug(f"Found base rate: {base_rate.base_monthly_rate} for {insurance_type.name}, age {age}, gender {gender}")
+            
+            # Calculate base premium
+            monthly_premium = calculate_premium(
+                base_rate=base_rate.base_monthly_rate,
+                coverage_amount=coverage_amount,
+                term_years=term_years,
+                insurance_type=insurance_type,
+                age=age,
+                gender=gender,
+                request_data=request.POST
+            )
+            
+            # Apply state adjustments if a state is selected
+            state_factor = 1.0
+            state_factor_description = None
+            state_factor_explanation = None
+            state_regulation = None
+            
+            if state:
+                try:
+                    state_adjustment = StateRateAdjustment.objects.get(
+                        insurance_type=insurance_type,
+                        state=state
+                    )
+                    state_factor = state_adjustment.rate_multiplier
+                    state_factor_description = state_adjustment.description
+                    state_factor_explanation = None
                     
-                    # Improved compound interest calculation using Time Value of Money formula
-                    # FV = P(1+r)^n where P=principal, r=rate, n=time period
-                    rate = annual_return_rate / Decimal('100')
-                    maturity_value = total_investment * (Decimal('1') + rate) ** Decimal(str(investment_return.term_years))
+                    # Apply the state adjustment
+                    monthly_premium = monthly_premium * Decimal(state_factor)
                     
-                    # Add maturity bonus if applicable
-                    if investment_return.maturity_bonus_percent > 0:
-                        bonus = total_investment * (investment_return.maturity_bonus_percent / Decimal('100'))
-                        maturity_value += bonus
+                    # Get any specific state regulations
+                    try:
+                        state_regulation = StateRegulation.objects.get(
+                            insurance_type=insurance_type,
+                            state=state
+                        )
+                    except StateRegulation.DoesNotExist:
+                        state_regulation = None
+                        
+                except StateRateAdjustment.DoesNotExist:
+                    # No adjustment for this state, use default
+                    pass
+            
+            # Generate the result
+            annual_premium = (monthly_premium * 12) * Decimal('0.95')  # 5% discount for annual payment
+            
+            # Collect premium adjustment factors
+            premium_adjustments = []
+            
+            # Get risk factors and their values
+            factor_type_map = {
+                'life': 'LIFE',
+                'health': 'HEALTH',
+                'auto': 'AUTO',
+                'home': 'HOME'
+            }
+            factor_type = factor_type_map.get(insurance_type.name.lower(), 'LIFE')
+            risk_factors = InsuranceRiskFactor.objects.filter(factor_type=factor_type)
+            
+            # Apply risk factors that are present in the request
+            for factor in risk_factors:
+                field_name = factor.name.lower().replace(' ', '_')  # Convert factor name to form field name format
+                if field_name in request.POST:
+                    value = request.POST.get(field_name)
+                    try:
+                        risk_value = RiskFactorValue.objects.get(
+                            risk_factor=factor,
+                            value_name=value
+                        )
+                        if risk_value.multiplier != 1.0:
+                            premium_adjustments.append({
+                                'name': factor.name,
+                                'factor': f"{risk_value.multiplier:.2f}x",
+                                'description': risk_value.description
+                            })
+                    except RiskFactorValue.DoesNotExist:
+                        continue
+            
+            # Add state adjustment if applicable
+            if state_factor != 1.0:
+                premium_adjustments.append({
+                    'name': 'State Adjustment',
+                    'factor': f"{state_factor:.2f}x",
+                    'description': f"Adjustment for {state_name} regulations"
+                })
+            
+            # Get investment returns data for applicable insurance types
+            investment_data = None
+            if insurance_type.name.lower() in ['life', 'health'] and term_years >= 5:
+                try:
+                    investment_return = InsuranceInvestmentReturn.objects.get(
+                        insurance_type=insurance_type,
+                        term_years=term_years
+                    )
+                    
+                    total_investment = annual_premium * term_years
+                    
+                    # Calculate maturity value
+                    maturity_value = calculate_maturity_value(
+                        premium=annual_premium,
+                        years=term_years,
+                        annual_return_rate=investment_return.annual_return_rate
+                    )
                     
                     total_returns = maturity_value - total_investment
                     
-                    # Calculate NAIC Model Rule compliant annual effective yield
-                    effective_annual_yield = ((maturity_value / total_investment) ** (Decimal('1') / Decimal(str(investment_return.term_years)))) - Decimal('1')
-                    effective_annual_yield_percent = effective_annual_yield * Decimal('100')
-                    
-                    # Get multiple return scenarios if available
+                    if total_investment > 0:
+                        return_percentage = (total_returns / total_investment) * 100
+                    else:
+                        return_percentage = 0
+                        
+                    # Generate conservative and aggressive scenarios
                     scenarios = {}
+                    
                     if investment_return.conservative_return_rate:
-                        cons_rate = investment_return.conservative_return_rate / Decimal('100')
-                        cons_maturity = total_investment * (Decimal('1') + cons_rate) ** Decimal(str(investment_return.term_years))
+                        conservative_maturity = calculate_maturity_value(
+                            premium=annual_premium,
+                            years=term_years,
+                            annual_return_rate=investment_return.conservative_return_rate
+                        )
+                        conservative_returns = conservative_maturity - total_investment
                         scenarios['conservative'] = {
-                            'rate': float(investment_return.conservative_return_rate),
-                            'maturity_value': round(float(cons_maturity), 2),
-                            'total_returns': round(float(cons_maturity - total_investment), 2)
+                            'rate': investment_return.conservative_return_rate,
+                            'maturity_value': "{:,.2f}".format(conservative_maturity),
+                            'total_returns': "{:,.2f}".format(conservative_returns)
                         }
                     
                     if investment_return.aggressive_return_rate:
-                        agg_rate = investment_return.aggressive_return_rate / Decimal('100')
-                        agg_maturity = total_investment * (Decimal('1') + agg_rate) ** Decimal(str(investment_return.term_years))
+                        aggressive_maturity = calculate_maturity_value(
+                            premium=annual_premium,
+                            years=term_years,
+                            annual_return_rate=investment_return.aggressive_return_rate
+                        )
+                        aggressive_returns = aggressive_maturity - total_investment
                         scenarios['aggressive'] = {
-                            'rate': float(investment_return.aggressive_return_rate),
-                            'maturity_value': round(float(agg_maturity), 2),
-                            'total_returns': round(float(agg_maturity - total_investment), 2)
+                            'rate': investment_return.aggressive_return_rate,
+                            'maturity_value': "{:,.2f}".format(aggressive_maturity),
+                            'total_returns': "{:,.2f}".format(aggressive_returns)
                         }
                     
+                    # Calculate effective annual yield
+                    if total_investment > 0 and term_years > 0:
+                        effective_annual_yield = ((maturity_value / total_investment) ** (1 / term_years)) - 1
+                        effective_annual_yield = effective_annual_yield * 100  # Convert to percentage
+                    else:
+                        effective_annual_yield = 0
+                    
                     investment_data = {
-                        'term_years': investment_return.term_years,
-                        'annual_return_rate': float(annual_return_rate),
-                        'guaranteed_return': investment_return.guaranteed_return,
+                        'total_investment': "{:,.2f}".format(total_investment),
+                        'maturity_value': "{:,.2f}".format(maturity_value),
+                        'total_returns': "{:,.2f}".format(total_returns),
+                        'return_percentage': "{:.2f}".format(return_percentage),
+                        'annual_return_rate': investment_return.annual_return_rate,
+                        'term_years': term_years,
                         'tax_benefits': investment_return.tax_benefits,
-                        'maturity_bonus_percent': float(investment_return.maturity_bonus_percent),
-                        'total_investment': round(float(total_investment), 2),
-                        'maturity_value': round(float(maturity_value), 2),
-                        'total_returns': round(float(total_returns), 2),
-                        'return_percentage': round(float(total_returns / total_investment * 100), 2) if total_investment else 0,
-                        'effective_annual_yield': round(float(effective_annual_yield_percent), 2),
-                        'scenarios': scenarios,
-                        'historical_performance': investment_return.historical_performance
+                        'guaranteed_return': investment_return.guaranteed_return,
+                        'maturity_bonus_percent': investment_return.maturity_bonus_percent,
+                        'historical_performance': investment_return.historical_performance,
+                        'effective_annual_yield': "{:.2f}".format(effective_annual_yield),
+                        'scenarios': scenarios
                     }
-                
-                # Get disclaimers
-                disclaimer_general = DisclaimerText.objects.filter(
+                    
+                except InsuranceInvestmentReturn.DoesNotExist:
+                    # No investment return data for this type and term
+                    pass
+            
+            # Get disclaimer text
+            disclaimer_general = None
+            disclaimer_specific = None
+            
+            try:
+                # Get active disclaimer texts and use the first one if multiple exist
+                disclaimer = DisclaimerText.objects.filter(
                     insurance_type=insurance_type,
-                    title__icontains="General",
                     is_active=True
                 ).first()
                 
-                disclaimer_specific = DisclaimerText.objects.filter(
-                    insurance_type=insurance_type,
-                    title__icontains=insurance_type.name,
-                    is_active=True
-                ).first()
-                
-                # Get state-specific regulations if available
-                state_regulation = None
-                if selected_state:
-                    state_regulation = StateRegulation.objects.filter(
-                        insurance_type=insurance_type,
-                        state=selected_state
-                    ).first()
-                
-                # Store results
-                result = {
-                    'insurance_type': insurance_type.name,
-                    'monthly_premium': round(float(monthly_premium), 2),
-                    'annual_premium': round(float(annual_premium), 2),
-                    'coverage_amount': float(coverage_amount),
-                    'term_years': term_years,
-                    'selected_state': selected_state,
-                    'state_name': states.get(selected_state, ''),
-                    'state_factor_description': state_factor_description,
-                    'state_factor_explanation': state_factor_explanation,
-                    'investment_data': investment_data,
-                    'premium_adjustments': premium_adjustments,
-                    'disclaimer_general': disclaimer_general.content if disclaimer_general else None,
-                    'disclaimer_specific': disclaimer_specific.content if disclaimer_specific else None,
-                    'state_regulation': {
-                        'special_requirements': state_regulation.special_requirements if state_regulation else None,
-                        'min_coverage': float(state_regulation.min_coverage_required) if state_regulation and state_regulation.min_coverage_required else None
-                    } if state_regulation else None
-                }
-                
-                context['result'] = result
-            else:
-                context['error'] = "No applicable insurance rate found for your criteria."
-        
+                if disclaimer:
+                    disclaimer_general = disclaimer.content
+                    disclaimer_specific = disclaimer.title
+            except Exception as e:
+                logger.error(f"Error fetching disclaimer: {str(e)}")
+                # No disclaimer for this insurance type
+            
+            result = {
+                'monthly_premium': "{:.2f}".format(monthly_premium),
+                'annual_premium': "{:.2f}".format(annual_premium),
+                'coverage_amount': "{:,}".format(int(coverage_amount)),
+                'term_years': term_years,
+                'insurance_type': insurance_type.name,
+                'state_name': state_name,
+                'selected_state': state,
+                'state_factor_description': state_factor_description,
+                'state_factor_explanation': state_factor_explanation,
+                'premium_adjustments': premium_adjustments,
+                'investment_data': investment_data,
+                'disclaimer_general': disclaimer_general,
+                'disclaimer_specific': disclaimer_specific,
+                'state_regulation': state_regulation
+            }
+            
+            return render(request, "main/insurance_calculator.html", {
+                "insurance_types": insurance_types,
+                "states": states,
+                "result": result
+            })
+            
+        except InsuranceType.DoesNotExist:
+            return render(request, "main/insurance_calculator.html", {
+                "insurance_types": insurance_types,
+                "states": states,
+                "error": "Invalid insurance type selected."
+            })
         except Exception as e:
-            logger.error(f"Error calculating insurance premium: {str(e)}")
-            context['error'] = f"An error occurred while calculating your insurance premium: {str(e)}"
+            logger.error(f"Error calculating premium: {str(e)}", exc_info=True)
+            return render(request, "main/insurance_calculator.html", {
+                "insurance_types": insurance_types,
+                "states": states,
+                "error": f"An error occurred: {str(e)}"
+            })
     
-    return render(request, "main/insurance_calculator.html", context)
+    # GET request
+    return render(request, "main/insurance_calculator.html", {
+        "insurance_types": insurance_types,
+        "states": states
+    })
 
