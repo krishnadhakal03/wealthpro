@@ -190,14 +190,46 @@
                     <div id="health-fields" class="dynamic-fields mb-4 d-none">
                         <h4>Health Insurance Details</h4>
                         <div class="row g-3">
-                            <div class="col-md-12">
+                            <div class="col-md-6">
                                 <label for="health_condition" class="form-label">Pre-existing Conditions</label>
                                 <select class="form-select" id="health_condition" name="health_condition">
                                     <option value="None">None</option>
                                     <option value="Diabetes">Diabetes</option>
                                     <option value="Hypertension">Hypertension</option>
                                     <option value="Heart Disease">Heart Disease</option>
-                                    <option value="Other">Other</option>
+                                    <option value="Cancer">Cancer history</option>
+                                    <option value="Multiple">Multiple conditions</option>
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="lifestyle" class="form-label">Lifestyle Assessment</label>
+                                <select class="form-select" id="lifestyle" name="lifestyle">
+                                    <option value="Excellent">Excellent</option>
+                                    <option value="Good" selected>Good</option>
+                                    <option value="Fair">Fair</option>
+                                    <option value="Poor">Poor</option>
+                                </select>
+                                <small class="form-text text-muted">Based on exercise habits, diet, etc.</small>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="prescription_meds" class="form-label">Regular Prescription Medications</label>
+                                <select class="form-select" id="prescription_meds" name="prescription_meds">
+                                    <option value="None">None</option>
+                                    <option value="1-2">1-2 medications</option>
+                                    <option value="3-5">3-5 medications</option>
+                                    <option value="More than 5">More than 5</option>
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="coverage_level" class="form-label">Coverage Level</label>
+                                <select class="form-select" id="coverage_level" name="coverage_level">
+                                    <option value="Bronze">Bronze (60% actuarial value)</option>
+                                    <option value="Silver" selected>Silver (70% actuarial value)</option>
+                                    <option value="Gold">Gold (80% actuarial value)</option>
+                                    <option value="Platinum">Platinum (90% actuarial value)</option>
                                 </select>
                             </div>
                         </div>
@@ -206,9 +238,53 @@
                     <div id="auto-fields" class="dynamic-fields mb-4 d-none">
                         <h4>Auto Insurance Details</h4>
                         <div class="row g-3">
-                            <div class="col-md-12">
+                            <div class="col-md-6">
                                 <label for="vehicle_value" class="form-label">Vehicle Value ($)</label>
                                 <input type="number" class="form-control" id="vehicle_value" name="vehicle_value" min="1000" step="500">
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="vehicle_type" class="form-label">Vehicle Type</label>
+                                <select class="form-select" id="vehicle_type" name="vehicle_type">
+                                    <option value="Economy">Economy sedan</option>
+                                    <option value="Mid-size" selected>Mid-size sedan</option>
+                                    <option value="SUV">SUV</option>
+                                    <option value="Luxury">Luxury vehicle</option>
+                                    <option value="Sports">Sports car</option>
+                                    <option value="High-performance">High-performance</option>
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="driving_record" class="form-label">Driving Record</label>
+                                <select class="form-select" id="driving_record" name="driving_record">
+                                    <option value="Clean" selected>Clean record</option>
+                                    <option value="Minor">Minor violations</option>
+                                    <option value="Major">Major violations</option>
+                                    <option value="DUI">DUI history</option>
+                                    <option value="Multiple">Multiple accidents</option>
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="annual_mileage" class="form-label">Annual Mileage</label>
+                                <select class="form-select" id="annual_mileage" name="annual_mileage">
+                                    <option value="Under 5000">Under 5,000 miles</option>
+                                    <option value="5000-10000" selected>5,000-10,000 miles</option>
+                                    <option value="10001-15000">10,001-15,000 miles</option>
+                                    <option value="15001-20000">15,001-20,000 miles</option>
+                                    <option value="Over 20000">Over 20,000 miles</option>
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-12">
+                                <label for="vehicle_age" class="form-label">Vehicle Age</label>
+                                <select class="form-select" id="vehicle_age" name="vehicle_age">
+                                    <option value="New">New (0-3 years)</option>
+                                    <option value="Recent" selected>Recent (4-7 years)</option>
+                                    <option value="Older">Older (8-12 years)</option>
+                                    <option value="Vintage">Vintage (12+ years)</option>
+                                </select>
                             </div>
                         </div>
                     </div>
@@ -216,9 +292,52 @@
                     <div id="home-fields" class="dynamic-fields mb-4 d-none">
                         <h4>Home Insurance Details</h4>
                         <div class="row g-3">
-                            <div class="col-md-12">
+                            <div class="col-md-6">
                                 <label for="home_value" class="form-label">Home Value ($)</label>
                                 <input type="number" class="form-control" id="home_value" name="home_value" min="10000" step="5000">
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="construction_type" class="form-label">Construction Type</label>
+                                <select class="form-select" id="construction_type" name="construction_type">
+                                    <option value="Brick">Brick/Masonry</option>
+                                    <option value="Wood" selected>Wood Frame</option>
+                                    <option value="Steel">Steel Frame</option>
+                                    <option value="Mixed">Mixed Materials</option>
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="roof_age" class="form-label">Roof Age</label>
+                                <select class="form-select" id="roof_age" name="roof_age">
+                                    <option value="New">New (0-5 years)</option>
+                                    <option value="Mid" selected>Mid-age (6-15 years)</option>
+                                    <option value="Older">Older (16-25 years)</option>
+                                    <option value="Very old">Very old (25+ years)</option>
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="location_risk" class="form-label">Location Risk</label>
+                                <select class="form-select" id="location_risk" name="location_risk">
+                                    <option value="Low" selected>Low risk area</option>
+                                    <option value="Moderate">Moderate risk</option>
+                                    <option value="Flood">High risk - flood zone</option>
+                                    <option value="Wildfire">High risk - wildfire</option>
+                                    <option value="Hurricane">High risk - hurricane</option>
+                                    <option value="Multiple">Multiple hazards</option>
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-12">
+                                <label for="security_features" class="form-label">Security Features</label>
+                                <select class="form-select" id="security_features" name="security_features">
+                                    <option value="Comprehensive">Comprehensive security</option>
+                                    <option value="Basic" selected>Basic security</option>
+                                    <option value="Minimal">Minimal security</option>
+                                    <option value="None">No security features</option>
+                                </select>
+                                <small class="form-text text-muted">Includes alarms, cameras, fire protection, etc.</small>
                             </div>
                         </div>
                     </div>
@@ -226,6 +345,48 @@
                     <div id="life-fields" class="dynamic-fields mb-4 d-none">
                         <h4>Life Insurance Details</h4>
                         <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="smoker_status" class="form-label">Smoker Status</label>
+                                <select class="form-select" id="smoker_status" name="smoker_status">
+                                    <option value="NS">Non-smoker</option>
+                                    <option value="Occasional">Occasional smoker</option>
+                                    <option value="Regular">Regular smoker</option>
+                                    <option value="Heavy">Heavy smoker</option>
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="bmi_category" class="form-label">BMI Category</label>
+                                <select class="form-select" id="bmi_category" name="bmi_category">
+                                    <option value="Normal">Normal weight</option>
+                                    <option value="Overweight">Overweight</option>
+                                    <option value="Obese">Obese</option>
+                                    <option value="Severely obese">Severely obese</option>
+                                </select>
+                                <small class="form-text text-muted">Body Mass Index affects mortality risk</small>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="family_history" class="form-label">Family History</label>
+                                <select class="form-select" id="family_history" name="family_history">
+                                    <option value="None">No major health issues</option>
+                                    <option value="Cancer">History of cancer</option>
+                                    <option value="Heart">History of heart disease</option>
+                                    <option value="Diabetes">History of diabetes</option>
+                                    <option value="Multiple">Multiple conditions</option>
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="occupation_risk" class="form-label">Occupation Risk Level</label>
+                                <select class="form-select" id="occupation_risk" name="occupation_risk">
+                                    <option value="Low">Low risk (office work)</option>
+                                    <option value="Moderate">Moderate risk</option>
+                                    <option value="High">High risk</option>
+                                    <option value="Very high">Very high risk (dangerous work)</option>
+                                </select>
+                            </div>
+                            
                             <div class="col-md-12">
                                 <p class="text-muted">Premium calculated using the 2017 CSO Mortality Tables for accurate risk assessment.</p>
                             </div>
@@ -267,6 +428,45 @@
                         </div>
                         {% endif %}
                     </div>
+                    
+                    <!-- Premium Adjustment Factors -->
+                    {% if result.premium_adjustments %}
+                    <div class="col-12 mt-4">
+                        <hr class="bg-light">
+                        <h5 class="text-center">Premium Adjustment Factors</h5>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-dark table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Factor</th>
+                                        <th>Adjustment</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for adjustment in result.premium_adjustments %}
+                                    <tr>
+                                        <td>{{ adjustment.name }}</td>
+                                        <td><strong>{{ adjustment.factor }}</strong></td>
+                                        <td>{{ adjustment.description }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% if result.state_regulation %}
+                        <div class="mt-3 p-2" style="background-color: rgba(255, 255, 240, 0.1); border-radius: 6px;">
+                            <p class="mb-1 fw-bold">State Regulations for {{ result.state_name }}</p>
+                            {% if result.state_regulation.min_coverage %}
+                            <p class="mb-1 small">Minimum required coverage: ${{ result.state_regulation.min_coverage }}</p>
+                            {% endif %}
+                            {% if result.state_regulation.special_requirements %}
+                            <p class="mb-0 small">{{ result.state_regulation.special_requirements }}</p>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
                     
                     {% if result.investment_data %}
                     <div class="col-12 mt-4">
@@ -314,12 +514,88 @@
                                 <small>Based on NAIC Model Rule calculations</small>
                             </div>
                         </div>
-                        
+
+                        {% if result.investment_data.scenarios %}
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <h5 class="text-center">Return Scenarios</h5>
+                                <div class="table-responsive">
+                                    <table class="table table-sm table-dark">
+                                        <thead>
+                                            <tr>
+                                                <th>Scenario</th>
+                                                <th>Annual Rate</th>
+                                                <th>Maturity Value</th>
+                                                <th>Total Returns</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% if result.investment_data.scenarios.conservative %}
+                                            <tr>
+                                                <td>Conservative</td>
+                                                <td>{{ result.investment_data.scenarios.conservative.rate }}%</td>
+                                                <td>${{ result.investment_data.scenarios.conservative.maturity_value }}</td>
+                                                <td>${{ result.investment_data.scenarios.conservative.total_returns }}</td>
+                                            </tr>
+                                            {% endif %}
+                                            <tr class="table-primary bg-primary">
+                                                <td><strong>Expected</strong></td>
+                                                <td><strong>{{ result.investment_data.annual_return_rate }}%</strong></td>
+                                                <td><strong>${{ result.investment_data.maturity_value }}</strong></td>
+                                                <td><strong>${{ result.investment_data.total_returns }}</strong></td>
+                                            </tr>
+                                            {% if result.investment_data.scenarios.aggressive %}
+                                            <tr>
+                                                <td>Aggressive</td>
+                                                <td>{{ result.investment_data.scenarios.aggressive.rate }}%</td>
+                                                <td>${{ result.investment_data.scenarios.aggressive.maturity_value }}</td>
+                                                <td>${{ result.investment_data.scenarios.aggressive.total_returns }}</td>
+                                            </tr>
+                                            {% endif %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if result.investment_data.historical_performance %}
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <div class="p-3" style="background-color: rgba(255, 255, 255, 0.1); border-radius: 6px; font-size: 0.9rem;">
+                                    <h6 class="mb-2">Historical Performance</h6>
+                                    <p class="mb-0">{{ result.investment_data.historical_performance }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+
                         <div class="disclaimer mt-3">
                             <small class="text-light">*Returns are estimates based on current rates. Actual returns may vary based on market conditions and policy terms.</small>
                         </div>
                     </div>
                     {% endif %}
+                    
+                    <!-- Add Legal Disclaimers Section -->
+                    <div class="col-12 mt-4">
+                        <hr class="bg-light">
+                        <h5 class="text-center mb-3">Important Information</h5>
+                        <div class="disclaimer-text p-3" style="background-color: rgba(255, 255, 255, 0.1); border-radius: 6px; font-size: 0.85rem;">
+                            {% if result.disclaimer_general %}
+                            <div class="mb-3">
+                                {{ result.disclaimer_general|safe }}
+                            </div>
+                            {% endif %}
+                            
+                            {% if result.disclaimer_specific %}
+                            <div>
+                                {{ result.disclaimer_specific|safe }}
+                            </div>
+                            {% endif %}
+                            
+                            <p class="mt-3 mb-0 fw-bold">This calculator is provided for educational purposes only. Please consult with a licensed agent for a full quote.</p>
+                        </div>
+                    </div>
                     
                     <div class="col-12 text-center mt-4">
                         <a href="{% url 'contact' %}" class="btn btn-light btn-lg me-2">Get Detailed Quote</a>

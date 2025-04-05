@@ -396,6 +396,61 @@ class InsuranceBaseRate(models.Model):
         else:
             return f"{self.insurance_type.name}: {self.gender} Ages {self.min_age}-{self.max_age}"
 
+class CSOMortalityTable(models.Model):
+    """2017 CSO Mortality Table for accurate life insurance calculations"""
+    GENDER_CHOICES = [
+        ('M', 'Male'),
+        ('F', 'Female'),
+    ]
+    
+    SMOKER_STATUS_CHOICES = [
+        ('NS', 'Non-smoker'),
+        ('SM', 'Smoker'),
+        ('ANY', 'Any'),
+    ]
+    
+    age = models.IntegerField(help_text="Age of the insured")
+    gender = models.CharField(max_length=5, choices=GENDER_CHOICES)
+    smoker_status = models.CharField(max_length=5, choices=SMOKER_STATUS_CHOICES, default='ANY')
+    mortality_rate = models.DecimalField(max_digits=10, decimal_places=6, help_text="Annual mortality rate per 1,000 individuals")
+    table_version = models.CharField(max_length=10, default="2017 CSO", help_text="Version of the CSO table")
+    
+    class Meta:
+        unique_together = ('age', 'gender', 'smoker_status', 'table_version')
+        verbose_name = "CSO Mortality Table Entry"
+        verbose_name_plural = "CSO Mortality Table Entries"
+    
+    def __str__(self):
+        return f"{self.table_version}: {self.gender} Age {self.age} ({self.get_smoker_status_display()}) - {self.mortality_rate}"
+
+class InsuranceRiskFactor(models.Model):
+    """Model for additional risk factors affecting insurance premiums"""
+    FACTOR_TYPE_CHOICES = [
+        ('LIFE', 'Life Insurance'),
+        ('HEALTH', 'Health Insurance'),
+        ('AUTO', 'Auto Insurance'),
+        ('HOME', 'Home Insurance'),
+    ]
+    
+    name = models.CharField(max_length=100, help_text="Name of the risk factor")
+    factor_type = models.CharField(max_length=10, choices=FACTOR_TYPE_CHOICES)
+    description = models.TextField(help_text="Description of how this factor affects premiums")
+    
+    class Meta:
+        unique_together = ('name', 'factor_type')
+    
+    def __str__(self):
+        return f"{self.name} ({self.get_factor_type_display()})"
+
+class RiskFactorValue(models.Model):
+    """Values for different risk factors"""
+    risk_factor = models.ForeignKey(InsuranceRiskFactor, on_delete=models.CASCADE, related_name='values')
+    value_name = models.CharField(max_length=100, help_text="The condition or value (e.g., 'Smoker', 'High Blood Pressure')")
+    multiplier = models.DecimalField(max_digits=5, decimal_places=3, help_text="Multiplier applied to base premium (e.g., 1.5 for 50% increase)")
+    
+    def __str__(self):
+        return f"{self.risk_factor.name}: {self.value_name} ({self.multiplier}x)"
+
 class InsuranceInvestmentReturn(models.Model):
     """Model to store return and maturity data for insurance policies"""
     insurance_type = models.ForeignKey(InsuranceType, on_delete=models.CASCADE, related_name='investment_returns')
@@ -404,6 +459,11 @@ class InsuranceInvestmentReturn(models.Model):
     guaranteed_return = models.BooleanField(default=False, help_text="Whether the return rate is guaranteed or estimated")
     tax_benefits = models.BooleanField(default=True, help_text="If the policy provides tax benefits")
     maturity_bonus_percent = models.DecimalField(max_digits=5, decimal_places=2, default=0, help_text="Additional bonus percentage at maturity")
+    
+    # Adding more detailed investment projections
+    conservative_return_rate = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True, help_text="Conservative scenario return rate")
+    aggressive_return_rate = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True, help_text="Aggressive scenario return rate")
+    historical_performance = models.TextField(blank=True, help_text="Description of historical performance")
     
     class Meta:
         unique_together = ('insurance_type', 'term_years')
@@ -480,6 +540,32 @@ class StateRateAdjustment(models.Model):
     
     def __str__(self):
         return f"{self.insurance_type.name} - {self.get_state_display()}: {self.rate_multiplier}x"
+
+class StateRegulation(models.Model):
+    """Model to store specific state insurance regulations"""
+    state = models.CharField(max_length=2, choices=StateRateAdjustment.STATE_CHOICES)
+    insurance_type = models.ForeignKey(InsuranceType, on_delete=models.CASCADE, related_name='state_regulations')
+    min_coverage_required = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True, 
+                                               help_text="Minimum coverage amount required by state law")
+    special_requirements = models.TextField(blank=True, help_text="Special requirements or disclosures for this state")
+    filing_requirements = models.TextField(blank=True, help_text="Filing requirements for this insurance type in this state")
+    
+    class Meta:
+        unique_together = ('state', 'insurance_type')
+        
+    def __str__(self):
+        return f"{self.get_state_display()} - {self.insurance_type.name} Regulations"
+
+class DisclaimerText(models.Model):
+    """Model for storing legal disclaimers for the calculator"""
+    insurance_type = models.ForeignKey(InsuranceType, on_delete=models.CASCADE, related_name='disclaimers')
+    title = models.CharField(max_length=200)
+    content = models.TextField()
+    is_active = models.BooleanField(default=True)
+    last_updated = models.DateField(auto_now=True)
+    
+    def __str__(self):
+        return f"{self.insurance_type.name} - {self.title}"
 
 class SiteSettings(models.Model):
     """Model to store global site settings that can be updated from admin"""

@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.utils.html import mark_safe, format_html
-from .models import Videos, HomeInfoSection, HomeSliderImage, Team, FooterSection, ServicesSection, Appointment, BusinessContact, Contactus, VideoDirect, ZoomCredentials, ZoomAvailableSlot, InsuranceType, InsuranceBaseRate, InsuranceInvestmentReturn, StateRateAdjustment, SiteSettings
+from .models import Videos, HomeInfoSection, HomeSliderImage, Team, FooterSection, ServicesSection, Appointment, BusinessContact, Contactus, VideoDirect, ZoomCredentials, ZoomAvailableSlot, InsuranceType, InsuranceBaseRate, InsuranceInvestmentReturn, StateRateAdjustment, SiteSettings, CSOMortalityTable, InsuranceRiskFactor, RiskFactorValue, StateRegulation, DisclaimerText
 import os
 import datetime
 import subprocess
@@ -187,6 +187,39 @@ class StateRateAdjustmentAdmin(admin.ModelAdmin):
     list_filter = ('insurance_type', 'state')
     search_fields = ('insurance_type__name', 'state')
     list_editable = ('rate_multiplier',)
+
+@admin.register(CSOMortalityTable)
+class CSOMortalityTableAdmin(admin.ModelAdmin):
+    list_display = ('age', 'gender', 'smoker_status', 'mortality_rate', 'table_version')
+    list_filter = ('gender', 'smoker_status', 'table_version')
+    search_fields = ('age', 'table_version')
+    ordering = ('age', 'gender', 'smoker_status')
+
+@admin.register(InsuranceRiskFactor)
+class InsuranceRiskFactorAdmin(admin.ModelAdmin):
+    list_display = ('name', 'factor_type', 'description')
+    list_filter = ('factor_type',)
+    search_fields = ('name', 'description')
+
+@admin.register(RiskFactorValue)
+class RiskFactorValueAdmin(admin.ModelAdmin):
+    list_display = ('risk_factor', 'value_name', 'multiplier')
+    list_filter = ('risk_factor__factor_type',)
+    search_fields = ('risk_factor__name', 'value_name')
+    autocomplete_fields = ['risk_factor']
+
+@admin.register(StateRegulation)
+class StateRegulationAdmin(admin.ModelAdmin):
+    list_display = ('state', 'insurance_type', 'min_coverage_required')
+    list_filter = ('state', 'insurance_type')
+    search_fields = ('state', 'insurance_type__name', 'special_requirements')
+
+@admin.register(DisclaimerText)
+class DisclaimerTextAdmin(admin.ModelAdmin):
+    list_display = ('title', 'insurance_type', 'is_active', 'last_updated')
+    list_filter = ('insurance_type', 'is_active')
+    search_fields = ('title', 'content')
+    list_editable = ('is_active',)
 
 def export_db_as_sqlite(modeladmin, request, queryset):
     """Create a downloadable dump of the entire database"""
