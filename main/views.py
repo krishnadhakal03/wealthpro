@@ -446,17 +446,19 @@ def book_zoom_slot(request):
         if success:
             return JsonResponse({
                 'success': True, 
-                'meeting': {
-                    'id': result.get('id'),
-                    'join_url': result.get('join_url'),
-                    'password': result.get('password', '')
-                }
+                'meeting': result
             })
         else:
-            return JsonResponse({'success': False, 'error': result})
+            return JsonResponse({
+                'success': False,
+                'error': result
+            })
     
     except Exception as e:
-        return JsonResponse({'success': False, 'error': str(e)})
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        })
 
 
 def contact(request):

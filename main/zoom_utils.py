@@ -368,7 +368,7 @@ def book_appointment_slot(slot_id, name, email, phone=None, notes=None):
         return False, "The selected time slot is no longer available."
     
     # Create Zoom meeting
-    meeting_topic = f"Wealth Pro Appointment with {name}"
+    meeting_topic = f"Next Generation Wealth Pro Appointment with {name}"
     agenda = f"Appointment with {name}. Contact info: {email}"
     if phone:
         agenda += f", {phone}"
