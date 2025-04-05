@@ -125,7 +125,7 @@ def appointment(request):
                                 Please click the Zoom link a few minutes before your scheduled time.
                                 If you need to reschedule, please contact us as soon as possible.
                                 
-                                Thank you for choosing Wealth Pro!
+                                Thank you for choosing Next Generation Wealth Pro!
                                 """
                             
                             # Send to customer
@@ -160,7 +160,7 @@ def appointment(request):
                                     admin_subject,
                                     admin_message,
                                     settings.DEFAULT_FROM_EMAIL,
-                                    ["krishna.dhakal03@gmail.com"],
+                                    [settings.CONTACT_EMAIL],
                                     fail_silently=False,
                                 )
                             except Exception as e:
@@ -226,7 +226,7 @@ def appointment(request):
                                     subject,
                                     message,
                                     settings.DEFAULT_FROM_EMAIL,
-                                    ["krishna.dhakal03@gmail.com"],
+                                    [settings.CONTACT_EMAIL],
                                     fail_silently=False,
                                 )
                             except Exception as e:
@@ -279,7 +279,7 @@ def appointment(request):
                         subject,
                         message,
                         settings.DEFAULT_FROM_EMAIL,  # Use the default email configured in settings
-                        ["krishna.dhakal03@gmail.com"],  # Your email address where you want the messages sent
+                        [settings.CONTACT_EMAIL],  # Use contact email from settings
                         fail_silently=False,
                     )
                 except Exception as e:
@@ -305,7 +305,7 @@ def appointment(request):
 
                 # Also send confirmation to the customer
                 try:
-                    customer_subject = "Your Appointment Request - Wealth Pro"
+                    customer_subject = "Your Appointment Request - Next Generation Wealth Pro"
                     customer_message = f"""
                         Thank you for your appointment request!
                         
@@ -313,7 +313,7 @@ def appointment(request):
                         
                         Our team will review your request and contact you shortly to confirm the details.
                         
-                        Thank you for choosing Wealth Pro!
+                        Thank you for choosing Next Generation Wealth Pro!
                         """
                     
                     send_mail(
