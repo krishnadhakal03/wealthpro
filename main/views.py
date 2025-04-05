@@ -577,10 +577,11 @@ def insurance_calculator(request):
     if request.method == 'POST':
         # Check if this is a resubmission (browser refresh)
         current_timestamp = request.POST.get('timestamp', '0')
-        session_timestamp = request.session.get('calculator_timestamp', '0')
+        session_timestamp = request.session.get('calculator_timestamp', '-1')  # Default to different value
         
-        # If timestamps match, this is a refresh - don't recalculate
-        if current_timestamp == session_timestamp:
+        # Only treat as refresh if timestamps match exactly and are not empty
+        if current_timestamp and session_timestamp and current_timestamp == session_timestamp:
+            # This is a refresh, return the page without processing
             return render(request, "main/insurance_calculator.html", context)
         
         # Store timestamp in session to check for refreshes

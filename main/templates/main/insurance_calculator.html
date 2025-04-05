@@ -384,7 +384,7 @@
             });
         });
         
-        // Pre-select insurance type if result exists
+        // Pre-select insurance type if result exists, otherwise default to Life
         /* Django template start - ignore linter errors */ 
         {% if result %}
             const typeName = "{{ result.insurance_type|lower }}";
@@ -421,6 +421,12 @@
                     stateSelect.value = "{{ result.selected_state }}";
                 }
             {% endif %}
+        {% else %}
+            // Default to Life insurance if no result
+            const lifeCard = document.querySelector(`.insurance-type-card[data-type-name="life"]`);
+            if (lifeCard) {
+                lifeCard.click();
+            }
         {% endif %}
         /* Django template end */
         
@@ -433,12 +439,20 @@
             }
             
             // Add a timestamp to prevent form resubmission on refresh
-            const timestampInput = document.createElement('input');
-            timestampInput.type = 'hidden';
-            timestampInput.name = 'timestamp';
-            timestampInput.value = new Date().getTime();
-            form.appendChild(timestampInput);
+            let timestampInput = form.querySelector('input[name="timestamp"]');
+            if (timestampInput) {
+                // Update existing timestamp
+                timestampInput.value = new Date().getTime();
+            } else {
+                // Create new timestamp input
+                timestampInput = document.createElement('input');
+                timestampInput.type = 'hidden';
+                timestampInput.name = 'timestamp';
+                timestampInput.value = new Date().getTime();
+                form.appendChild(timestampInput);
+            }
             
+            // Always allow form submission
             return true;
         });
         
