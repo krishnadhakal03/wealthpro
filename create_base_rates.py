@@ -293,16 +293,28 @@ def create_placeholder_data():
     if DisclaimerText.objects.count() == 0:
         print("Creating insurance disclaimers...")
         
-        # General disclaimer for all insurance types
+        insurance_types = InsuranceType.objects.all()
+        if not insurance_types:
+            print("No insurance types found. Skipping disclaimer creation.")
+            return False
+        
+        # Use first insurance type for general disclaimer
+        first_type = insurance_types.first()
+        
+        # General disclaimer assigned to first insurance type
         DisclaimerText.objects.create(
-            insurance_type=None,
+            insurance_type=first_type,  # Fixed: Use first insurance type instead of None
             title="General Insurance Disclaimer",
             content="The premium estimates provided by this calculator are for illustration purposes only and do not constitute an offer of insurance. Actual premiums may vary based on underwriting, policy features, and other factors. Please consult with a licensed insurance agent for an accurate quote.",
             is_active=True
         )
         
         # Specific disclaimers for each insurance type
-        for insurance_type in InsuranceType.objects.all():
+        for insurance_type in insurance_types:
+            # Skip the first type if we already created a general disclaimer for it
+            if insurance_type == first_type:
+                continue
+                
             DisclaimerText.objects.create(
                 insurance_type=insurance_type,
                 title=f"{insurance_type.name} Insurance Disclaimer",
