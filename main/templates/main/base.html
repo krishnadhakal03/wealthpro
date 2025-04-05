@@ -24,13 +24,13 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
     
     <!-- Favicon -->
     {% if site_settings.favicon %}
     <link rel="icon" href="{{ site_settings.favicon.url }}" type="image/png">
     {% else %}
-    <link rel="icon" href="{% static 'images/dlogo.png' %}" type="image/png">
+  <link rel="icon" href="{% static 'images/dlogo.png' %}" type="image/png">
     {% endif %}
     
     {% block extra_css %}{% endblock %}
@@ -167,9 +167,8 @@
                             <a href="{% url 'home' %}">Home</a>
                             <a href="{% url 'services' %}">Services</a>
                             <a href="{% url 'contact' %}">Contact</a>
-                            {% if user.is_staff %}
-                            <a href="{% url 'admin:index' %}">Admin</a>
-                            {% endif %}
+                            <a href="{% url 'admin:index' %}" target="_blank">Admin</a>
+                            <a href="https://mail.zoho.com" target="_blank">Email</a>
                         </div>
                     </div>
                 </div>

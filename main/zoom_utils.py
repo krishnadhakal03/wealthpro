@@ -5,6 +5,7 @@ import base64
 import logging
 from django.utils import timezone
 from .models import ZoomCredentials, ZoomAvailableSlot
+from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
@@ -388,6 +389,8 @@ def book_appointment_slot(slot_id, name, email, phone=None, notes=None):
     slot.is_available = False
     slot.meeting_id = meeting_data.get("id")
     slot.save()
+    
+    logger.info(f"Booked appointment slot {slot_id} for {name} ({email})")
     
     return True, meeting_data
 

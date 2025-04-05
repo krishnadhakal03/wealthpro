@@ -247,9 +247,9 @@ def appointment(request):
                 # Check if we have an appointment date
                 appointment_date = form.cleaned_data.get('appointment')
 
-            # Prepare the email content
-            subject = f"New Appointment request - {name}"
-            message = f"""
+                # Prepare the email content
+                subject = f"New Appointment request - {name}"
+                message = f"""
                 You have received a new appointment request from {name}. 
 
                 Phone: {phone}
@@ -275,13 +275,13 @@ def appointment(request):
 
                 # Send the email to your email address (configured in settings.py)
                 try:
-                send_mail(
-                    subject,
-                    message,
+                    send_mail(
+                        subject,
+                        message,
                         settings.DEFAULT_FROM_EMAIL,  # Use the default email configured in settings
-                    ["krishna.dhakal03@gmail.com"],  # Your email address where you want the messages sent
-                    fail_silently=False,
-                )
+                        ["krishna.dhakal03@gmail.com"],  # Your email address where you want the messages sent
+                        fail_silently=False,
+                    )
                 except Exception as e:
                     logger.error(f"Failed to send email for traditional appointment: {str(e)}")
 

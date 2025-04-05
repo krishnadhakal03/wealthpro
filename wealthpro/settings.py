@@ -11,6 +11,10 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 import os
 from pathlib import Path
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -19,12 +23,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-w_anj&11r^lm5@sltv*t6q(&im7kch!uj*p4*v-0xd5j^61csc'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-w_anj&11r^lm5@sltv*t6q(&im7kch!uj*p4*v-0xd5j^61csc')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'wealthpro-c4ghhwhkh6evbwdu.centralus-01.azurewebsites.net', 'nextgenerationwealthpro.com', 'www.nextgenerationwealthpro.com', '13.59.63.39']
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1,testserver').split(',')
 # Accept some malformed requests
 SECURE_PROXY_SSL_HEADER = None
 USE_X_FORWARDED_HOST = True
@@ -121,33 +125,44 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Email settings
-# AWS SES configuration
-AWS_REGION = 'us-east-2'  # US East (Ohio) region
-USE_SES = True  # Set to False to disable SES and use SMTP only
+# Email configuration
+# First check for explicit EMAIL_BACKEND in environment
+EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', None)
 
-# Custom backend that chooses between SES and SMTP
-EMAIL_BACKEND = 'main.email_backend.SESEmailBackend'
+# AWS SES Configuration from environment variables
+AWS_REGION = os.environ.get('AWS_REGION', 'us-east-2')
+USE_SES = os.environ.get('USE_SES', 'True') == 'True'
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'legacy@nextgenerationwealthpro.com')
+CONTACT_EMAIL = os.environ.get('CONTACT_EMAIL', 'legacy@nextgenerationwealthpro.com')
 
-# AWS SES settings - values should be provided by AWS IAM
-EMAIL_HOST = 'email-smtp.us-east-2.amazonaws.com'  # SES SMTP endpoint
-EMAIL_PORT = 587                                   # Port for TLS
-EMAIL_USE_TLS = True                              # Use TLS for security
-EMAIL_HOST_USER = ''                              # SES SMTP username (to be filled)
-EMAIL_HOST_PASSWORD = ''                          # SES SMTP password (to be filled)
-DEFAULT_FROM_EMAIL = 'info@nextgenerationwealthpro.com'  # Verified sender email
-CONTACT_EMAIL = 'krishna.dhakal03@gmail.com'      # Where contact form emails go
-
-# Fallback to regular SMTP if SES is disabled or credentials are not available
-if not USE_SES or not EMAIL_HOST_USER or not EMAIL_HOST_PASSWORD:
-    # Fallback email settings
-    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-    EMAIL_HOST = 'smtp.gmail.com'                 # Gmail SMTP server
-    EMAIL_PORT = 587                              # Port for TLS
-    EMAIL_USE_TLS = True                          # Use TLS for security
-    EMAIL_HOST_USER = 'krishna.dhakal03@gmail.com'  # Your Gmail email address
-    EMAIL_HOST_PASSWORD = 'swjf ceoe adxv engz'   # Your Gmail App Password
-    DEFAULT_FROM_EMAIL = 'krishna.dhakal03@gmail.com'
+# If EMAIL_BACKEND wasn't explicitly set, determine it based on configuration
+if not EMAIL_BACKEND:
+    if USE_SES and EMAIL_HOST_USER and EMAIL_HOST_PASSWORD:
+        # Use SES
+        EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+        EMAIL_HOST = f'email-smtp.{AWS_REGION}.amazonaws.com'
+        EMAIL_PORT = 587
+        EMAIL_USE_TLS = True
+    elif DEBUG:
+        # Use console backend in development
+        EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+    else:
+        # Fallback to Gmail SMTP in production
+        EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+        EMAIL_HOST = 'smtp.gmail.com'
+        EMAIL_PORT = 587
+        EMAIL_USE_TLS = True
+        EMAIL_HOST_USER = 'krishna.dhakal03@gmail.com'
+        EMAIL_HOST_PASSWORD = 'swjf ceoe adxv engz'
+        DEFAULT_FROM_EMAIL = 'krishna.dhakal03@gmail.com'
+else:
+    # EMAIL_BACKEND was set explicitly; configure host settings if using SMTP
+    if 'smtp' in EMAIL_BACKEND and USE_SES:
+        EMAIL_HOST = f'email-smtp.{AWS_REGION}.amazonaws.com'
+        EMAIL_PORT = 587
+        EMAIL_USE_TLS = True
 
 # Media files
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
@@ -174,7 +189,7 @@ CSRF_TRUSTED_ORIGINS = [
 
 # Add any custom domains or EC2 instances here
 if 'CSRF_TRUSTED_ORIGINS' in os.environ:
-    CSRF_TRUSTED_ORIGINS += env.list('CSRF_TRUSTED_ORIGINS')
+    CSRF_TRUSTED_ORIGINS += os.environ.get('CSRF_TRUSTED_ORIGINS', '').split(',')
 
 # Caching Configuration
 CACHES = {
