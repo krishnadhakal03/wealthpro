@@ -23,22 +23,22 @@
     
     .insurance-type-card:hover {
         transform: translateY(-5px);
-        border-color: #1976d2;
+        border-color: #0d47a1;
     }
     
     .insurance-type-card.selected {
-        border-color: #1976d2;
-        background-color: rgba(25, 118, 210, 0.05);
+        border-color: #0d47a1;
+        background-color: rgba(13, 71, 161, 0.05);
     }
     
     .insurance-icon {
         font-size: 2rem;
-        color: #1976d2;
+        color: #0d47a1;
         margin-bottom: 15px;
     }
     
     .result-box {
-        background-color: #1976d2;
+        background-color: #0d47a1;
         color: white;
         border-radius: 10px;
         padding: 25px;
@@ -69,13 +69,13 @@
     }
 
     .btn-primary {
-        background-color: #1976d2;
-        border-color: #1976d2;
+        background-color: #0d47a1;
+        border-color: #0d47a1;
     }
 
     .btn-primary:hover {
-        background-color: #1565c0;
-        border-color: #1565c0;
+        background-color: #083677;
+        border-color: #083677;
     }
 
     .state-factor {
@@ -83,6 +83,11 @@
         padding: 10px;
         border-radius: 6px;
         margin-top: 10px;
+    }
+    
+    /* Override Bootstrap's bg-primary with our darker blue */
+    .bg-primary {
+        background-color: #0d47a1 !important;
     }
 </style>
 {% endblock %}
