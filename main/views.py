@@ -575,6 +575,17 @@ def insurance_calculator(request):
     }
     
     if request.method == 'POST':
+        # Check if this is a resubmission (browser refresh)
+        current_timestamp = request.POST.get('timestamp', '0')
+        session_timestamp = request.session.get('calculator_timestamp', '0')
+        
+        # If timestamps match, this is a refresh - don't recalculate
+        if current_timestamp == session_timestamp:
+            return render(request, "main/insurance_calculator.html", context)
+        
+        # Store timestamp in session to check for refreshes
+        request.session['calculator_timestamp'] = current_timestamp
+        
         # Extract form data
         insurance_type_id = request.POST.get('insurance_type')
         age = int(request.POST.get('age', 0))
