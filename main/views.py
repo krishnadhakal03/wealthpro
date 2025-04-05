@@ -575,32 +575,20 @@ def insurance_calculator(request):
     }
     
     if request.method == 'POST':
-        # Check if this is a resubmission (browser refresh)
-        current_timestamp = request.POST.get('timestamp', '0')
-        session_timestamp = request.session.get('calculator_timestamp', '-1')  # Default to different value
-        
-        # Only treat as refresh if timestamps match exactly and are not empty
-        if current_timestamp and session_timestamp and current_timestamp == session_timestamp:
-            # This is a refresh, return the page without processing
-            return render(request, "main/insurance_calculator.html", context)
-        
-        # Store timestamp in session to check for refreshes
-        request.session['calculator_timestamp'] = current_timestamp
-        
-        # Extract form data
-        insurance_type_id = request.POST.get('insurance_type')
-        age = int(request.POST.get('age', 0))
-        gender = request.POST.get('gender', 'ANY')
-        coverage_amount = Decimal(request.POST.get('coverage_amount', 0))
-        term_years = int(request.POST.get('term_years', 10))
-        selected_state = request.POST.get('state', '')
-        
-        # Additional inputs based on insurance type
-        vehicle_value = request.POST.get('vehicle_value', 0)
-        home_value = request.POST.get('home_value', 0)
-        health_condition = request.POST.get('health_condition', 'None')
-        
         try:
+            # Extract form data
+            insurance_type_id = request.POST.get('insurance_type')
+            age = int(request.POST.get('age', 0))
+            gender = request.POST.get('gender', 'ANY')
+            coverage_amount = Decimal(request.POST.get('coverage_amount', 0))
+            term_years = int(request.POST.get('term_years', 10))
+            selected_state = request.POST.get('state', '')
+            
+            # Additional inputs based on insurance type
+            vehicle_value = request.POST.get('vehicle_value', 0)
+            home_value = request.POST.get('home_value', 0)
+            health_condition = request.POST.get('health_condition', 'None')
+            
             # Get insurance type
             insurance_type = InsuranceType.objects.get(id=insurance_type_id)
             
@@ -652,6 +640,9 @@ def insurance_calculator(request):
                         monthly_premium *= Decimal('1.3')  # 30% increase for pre-existing conditions
                 
                 # Apply state-specific adjustment if a state was selected
+                state_factor_description = None
+                state_factor_explanation = None
+                
                 if selected_state:
                     state_adjustment = StateRateAdjustment.objects.filter(
                         insurance_type=insurance_type,
@@ -662,18 +653,11 @@ def insurance_calculator(request):
                         monthly_premium *= state_adjustment.rate_multiplier
                         state_factor_description = f"{state_adjustment.get_state_display()} adjustment: {state_adjustment.rate_multiplier}x"
                         state_factor_explanation = state_adjustment.description or "State-specific regulatory adjustment"
-                    else:
-                        state_factor_description = None
-                        state_factor_explanation = None
                 
                 annual_premium = monthly_premium * Decimal('12')
                 
                 # Calculate maturity and returns
                 investment_data = None
-                maturity_value = None
-                total_investment = None
-                total_returns = None
-                annual_return_rate = None
                 
                 # Find investment return data for this insurance type and term
                 investment_return = InsuranceInvestmentReturn.objects.filter(
@@ -681,7 +665,7 @@ def insurance_calculator(request):
                     term_years=term_years
                 ).first()
                 
-                # If no exact match for term, get the closest available term
+                # If no exact match for term, find closest
                 if not investment_return:
                     investment_return = InsuranceInvestmentReturn.objects.filter(
                         insurance_type=insurance_type
@@ -730,8 +714,8 @@ def insurance_calculator(request):
                     'term_years': term_years,
                     'selected_state': selected_state,
                     'state_name': states.get(selected_state, ''),
-                    'state_factor_description': state_factor_description if selected_state else None,
-                    'state_factor_explanation': state_factor_explanation if selected_state else None,
+                    'state_factor_description': state_factor_description,
+                    'state_factor_explanation': state_factor_explanation,
                     'investment_data': investment_data
                 }
                 
@@ -741,7 +725,7 @@ def insurance_calculator(request):
         
         except Exception as e:
             logger.error(f"Error calculating insurance premium: {str(e)}")
-            context['error'] = "An error occurred while calculating your insurance premium."
+            context['error'] = f"An error occurred while calculating your insurance premium: {str(e)}"
     
     return render(request, "main/insurance_calculator.html", context)
 

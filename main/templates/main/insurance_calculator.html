@@ -130,9 +130,9 @@
                                     <div class="card-body">
                                         <i class="fa {{ type.icon }} insurance-icon"></i>
                                         <h5 class="card-title">{{ type.name }}</h5>
-                                        <input type="radio" name="insurance_type" value="{{ type.id }}" class="d-none insurance-type-radio">
                                     </div>
                                 </div>
+                                <input type="radio" name="insurance_type" value="{{ type.id }}" class="insurance-type-radio visually-hidden">
                             </div>
                             {% empty %}
                             <div class="col-12 text-center">
@@ -350,119 +350,114 @@
             }
         }
         
+        // Function to select an insurance type
+        function selectInsuranceType(card) {
+            // Get the card's insurance type
+            const typeId = card.dataset.typeId;
+            const typeName = card.dataset.typeName;
+            
+            // Find the corresponding radio button
+            const radio = document.querySelector(`.insurance-type-radio[value="${typeId}"]`);
+            
+            // Remove selected class from all cards
+            insuranceCards.forEach(c => c.classList.remove('selected'));
+            
+            // Add selected class to clicked card
+            card.classList.add('selected');
+            
+            // Select the corresponding radio button
+            if (radio) {
+                radio.checked = true;
+            }
+            
+            // Hide all dynamic fields
+            dynamicFields.forEach(field => field.classList.add('d-none'));
+            
+            // Show appropriate fields based on selection
+            const specificFields = document.getElementById(`${typeName}-fields`);
+            if (specificFields) {
+                specificFields.classList.remove('d-none');
+            }
+            
+            // Clear results when insurance type changes
+            clearResults();
+        }
+        
         // Add listeners to all form inputs
         const formInputs = form.querySelectorAll('input, select');
         formInputs.forEach(input => {
-            input.addEventListener('change', clearResults);
+            if (input.type !== 'hidden' && input.type !== 'radio') { // Don't add listeners to hidden inputs or radio buttons handled separately
+                input.addEventListener('change', clearResults);
+            }
         });
         
         // Handle insurance type selection
         insuranceCards.forEach(card => {
             card.addEventListener('click', function() {
-                // Remove selected class from all cards
-                insuranceCards.forEach(c => c.classList.remove('selected'));
-                
-                // Add selected class to clicked card
-                this.classList.add('selected');
-                
-                // Select the corresponding radio button
-                const radio = this.querySelector('.insurance-type-radio');
-                radio.checked = true;
-                
-                // Hide all dynamic fields
-                dynamicFields.forEach(field => field.classList.add('d-none'));
-                
-                // Show appropriate fields based on selection
-                const insuranceType = this.dataset.typeName;
-                const specificFields = document.getElementById(`${insuranceType}-fields`);
-                if (specificFields) {
-                    specificFields.classList.remove('d-none');
-                }
-                
-                // Clear results when insurance type changes
-                clearResults();
+                selectInsuranceType(this);
             });
         });
         
-        // Pre-select insurance type if result exists, otherwise default to Life
-        /* Django template start - ignore linter errors */ 
-        {% if result %}
-            const typeName = "{{ result.insurance_type|lower }}";
-            const matchingCard = document.querySelector(`.insurance-type-card[data-type-name="${typeName}"]`);
-            if (matchingCard) {
-                matchingCard.click();
-            }
+        // Default to Life insurance when the page loads
+        function setDefaultInsuranceType() {
+            let selectedCard = null;
             
-            // Pre-fill form with previous values
-            const ageInput = document.getElementById('age');
-            if (ageInput) {
-                ageInput.value = "{{ request.POST.age|default:'' }}";
-            }
-            
-            const genderSelect = document.getElementById('gender');
-            if (genderSelect) {
-                genderSelect.value = "{{ request.POST.gender|default:'' }}";
-            }
-            
-            const coverageInput = document.getElementById('coverage_amount');
-            if (coverageInput) {
-                coverageInput.value = "{{ request.POST.coverage_amount|default:'' }}";
-            }
-            
-            const termSelect = document.getElementById('term_years');
-            if (termSelect) {
-                termSelect.value = "{{ request.POST.term_years|default:'10' }}";
-            }
-            
-            // Pre-select state if present in result
-            {% if result.selected_state %}
-                const stateSelect = document.getElementById('state');
-                if (stateSelect) {
-                    stateSelect.value = "{{ result.selected_state }}";
+            // Try to find pre-selected insurance if there's a result
+            {% if result %}
+                const typeName = "{{ result.insurance_type|lower }}";
+                selectedCard = document.querySelector(`.insurance-type-card[data-type-name="${typeName}"]`);
+                if (selectedCard) {
+                    selectInsuranceType(selectedCard);
+                    
+                    // Pre-fill form with previous values
+                    const ageInput = document.getElementById('age');
+                    if (ageInput) {
+                        ageInput.value = "{{ request.POST.age|default:'' }}";
+                    }
+                    
+                    const genderSelect = document.getElementById('gender');
+                    if (genderSelect) {
+                        genderSelect.value = "{{ request.POST.gender|default:'' }}";
+                    }
+                    
+                    const coverageInput = document.getElementById('coverage_amount');
+                    if (coverageInput) {
+                        coverageInput.value = "{{ request.POST.coverage_amount|default:'' }}";
+                    }
+                    
+                    const termSelect = document.getElementById('term_years');
+                    if (termSelect) {
+                        termSelect.value = "{{ request.POST.term_years|default:'10' }}";
+                    }
+                    
+                    {% if result.selected_state %}
+                        const stateSelect = document.getElementById('state');
+                        if (stateSelect) {
+                            stateSelect.value = "{{ result.selected_state }}";
+                        }
+                    {% endif %}
                 }
             {% endif %}
-        {% else %}
-            // Default to Life insurance if no result
-            const lifeCard = document.querySelector(`.insurance-type-card[data-type-name="life"]`);
-            if (lifeCard) {
-                lifeCard.click();
+            
+            // If no result or couldn't find matching card, default to Life insurance
+            if (!selectedCard) {
+                const lifeCard = document.querySelector(`.insurance-type-card[data-type-name="life"]`);
+                if (lifeCard) {
+                    selectInsuranceType(lifeCard);
+                }
             }
-        {% endif %}
-        /* Django template end */
+        }
         
-        // Prevent the back/refresh issue by using POST with a unique identifier
+        // Set default insurance type when page loads
+        setDefaultInsuranceType();
+        
+        // Simple form validation
         form.addEventListener('submit', function(event) {
+            // Ensure an insurance type is selected
             if (!document.querySelector('.insurance-type-radio:checked')) {
                 alert('Please select an insurance type.');
                 event.preventDefault();
                 return false;
-            }
-            
-            // Add a timestamp to prevent form resubmission on refresh
-            let timestampInput = form.querySelector('input[name="timestamp"]');
-            if (timestampInput) {
-                // Update existing timestamp
-                timestampInput.value = new Date().getTime();
-            } else {
-                // Create new timestamp input
-                timestampInput = document.createElement('input');
-                timestampInput.type = 'hidden';
-                timestampInput.name = 'timestamp';
-                timestampInput.value = new Date().getTime();
-                form.appendChild(timestampInput);
-            }
-            
-            // Always allow form submission
-            return true;
-        });
-        
-        // Handle browser back button and refresh
-        window.addEventListener('pageshow', function(event) {
-            // If the page is loaded from cache (back button) clear form
-            if (event.persisted) {
-                clearResults();
-                // Optional: Reset the form
-                // form.reset();
             }
         });
     });
