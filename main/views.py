@@ -9,7 +9,7 @@ import json
 import datetime
 import logging
 import os
-from urllib.parse import parse_qs, urlparse
+from urllib.parse import parse_qs, urlencode, urlparse
 from django.db import models
 from decimal import Decimal
 
@@ -33,7 +33,7 @@ from main.settings_service import get_maps_settings, get_business_hours
 logger = logging.getLogger(__name__)
 
 
-def get_video_embed_url(url):
+def get_video_embed_url(url, origin=None):
     if not url:
         return None
 
@@ -50,10 +50,12 @@ def get_video_embed_url(url):
             video_id = None
 
         if video_id:
-            return f'https://www.youtube.com/embed/{video_id}'
+            query = urlencode({'origin': origin}) if origin else ''
+            return f'https://www.youtube.com/embed/{video_id}' + (f'?{query}' if query else '')
 
     if host == 'youtu.be' and path_parts:
-        return f'https://www.youtube.com/embed/{path_parts[0]}'
+        query = urlencode({'origin': origin}) if origin else ''
+        return f'https://www.youtube.com/embed/{path_parts[0]}' + (f'?{query}' if query else '')
 
     if host in {'vimeo.com', 'player.vimeo.com'}:
         if host == 'player.vimeo.com' and len(path_parts) >= 2 and path_parts[0] == 'video':
@@ -335,9 +337,10 @@ def team(request):
     return render(request, "main/team.html", {"teams": teams})
 
 def videos(request):
+    embed_origin = request.build_absolute_uri('/').rstrip('/')
     vid = list(Videos.objects.all())
     for video in vid:
-        video.embed_url = get_video_embed_url(video.url)
+        video.embed_url = get_video_embed_url(video.url, origin=embed_origin)
 
     directVideo = [annotate_direct_video(video) for video in VideoDirect.objects.all()]
     return render(request, "main/videos.html", {
