@@ -8,6 +8,8 @@ from django.views.decorators.http import require_POST
 import json
 import datetime
 import logging
+import os
+from urllib.parse import parse_qs, urlencode, urlparse
 from django.db import models
 from decimal import Decimal
 
@@ -29,6 +31,59 @@ from main.settings_service import get_maps_settings, get_business_hours
 # Create your views here.
 
 logger = logging.getLogger(__name__)
+
+
+def get_video_embed_url(url, origin=None):
+    if not url:
+        return None
+
+    parsed = urlparse(url.strip())
+    host = parsed.netloc.lower().replace('www.', '')
+    path_parts = [part for part in parsed.path.split('/') if part]
+
+    if host in {'youtube.com', 'm.youtube.com', 'music.youtube.com'}:
+        if parsed.path == '/watch':
+            video_id = parse_qs(parsed.query).get('v', [None])[0]
+        elif path_parts and path_parts[0] in {'embed', 'shorts'}:
+            video_id = path_parts[1] if len(path_parts) > 1 else None
+        else:
+            video_id = None
+
+        if video_id:
+            query = urlencode({'origin': origin}) if origin else ''
+            return f'https://www.youtube.com/embed/{video_id}' + (f'?{query}' if query else '')
+
+    if host == 'youtu.be' and path_parts:
+        query = urlencode({'origin': origin}) if origin else ''
+        return f'https://www.youtube.com/embed/{path_parts[0]}' + (f'?{query}' if query else '')
+
+    if host in {'vimeo.com', 'player.vimeo.com'}:
+        if host == 'player.vimeo.com' and len(path_parts) >= 2 and path_parts[0] == 'video':
+            video_id = path_parts[1]
+        else:
+            video_id = path_parts[0] if path_parts else None
+
+        if video_id and video_id.isdigit():
+            return f'https://player.vimeo.com/video/{video_id}'
+
+    return None
+
+
+def annotate_direct_video(video):
+    video.file_exists = False
+    video.expected_path = ''
+
+    if not video.video:
+        return video
+
+    try:
+        video.expected_path = video.video.path
+        video.file_exists = os.path.exists(video.expected_path)
+    except (NotImplementedError, ValueError):
+        video.expected_path = ''
+        video.file_exists = False
+
+    return video
 
 # Helper function for insurance calculator
 def get_age_bracket(age):
@@ -282,9 +337,17 @@ def team(request):
     return render(request, "main/team.html", {"teams": teams})
 
 def videos(request):
-    vid = Videos.objects.all()
-    directVideo = VideoDirect.objects.all()
-    return render(request, "main/videos.html", {"vid": vid, "directVideo": directVideo})
+    embed_origin = request.build_absolute_uri('/').rstrip('/')
+    vid = list(Videos.objects.all())
+    for video in vid:
+        video.embed_url = get_video_embed_url(video.url, origin=embed_origin)
+
+    directVideo = [annotate_direct_video(video) for video in VideoDirect.objects.all()]
+    return render(request, "main/videos.html", {
+        "vid": vid,
+        "directVideo": directVideo,
+        "show_expected_media_path": settings.DEBUG,
+    })
 
 def appointment(request):
     if request.method == "POST":
