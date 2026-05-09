@@ -357,8 +357,8 @@ a:hover {
     border-top: 1px solid color-mix(in srgb, var(--wp-hero-accent) 14%, transparent);
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
     color: var(--wp-hero-text);
-    padding-top: 4.5rem;
-    padding-bottom: 4.5rem;
+    padding-top: 2.5rem;
+    padding-bottom: 2.5rem;
     margin-bottom: 2.5rem;
     position: relative;
 }
@@ -617,6 +617,13 @@ a:hover {
 
     .navbar-brand h2 {
         font-size: 0.95rem;
+    }
+    
+    .hero-header,
+    .container-fluid.bg-primary.hero-header {
+        padding-top: 2rem;
+        padding-bottom: 2rem;
+        margin-bottom: 2rem;
     }
 }
 
