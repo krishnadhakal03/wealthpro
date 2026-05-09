@@ -27,6 +27,9 @@ var/
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
+local.sqlite3
+local.sqlite3-journal
+*.sqlite3-journal
 media
 
 # If using a virtualenv
