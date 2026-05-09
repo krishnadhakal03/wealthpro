@@ -16,27 +16,68 @@ PRESET_THEME_PALETTES = {
     'trust_navy': {'primary': '#0B1F3A', 'accent': '#2F80ED'},
     'modern_teal': {'primary': '#0F3D3E', 'accent': '#2DD4BF'},
     'executive_gold': {'primary': '#111827', 'accent': '#D4AF37'},
+    'clean_blue': {'primary': '#0D6EFD', 'accent': '#38BDF8'},
+    'carrier_classic': {'primary': '#003366', 'accent': '#F2B705'},
     'custom': {'primary': '#02070F', 'accent': '#3B82F6'},
 }
 
-DEFAULT_THEME = {
-    'primary': '#02070F',
-    'primary_hover': '#0B1220',
-    'accent': '#3B82F6',
-    'accent_hover': '#2563EB',
-    'button_bg': '#02070F',
-    'button_text': '#FFFFFF',
-    'navbar_bg': '#02070F',
-    'navbar_text': '#FFFFFF',
-    'navbar_link_hover': '#60A5FA',
-    'footer_bg': '#02070F',
-    'footer_text': '#CBD5E1',
-    'link_color': '#2563EB',
-    'heading_color': '#111827',
-    'body_text': '#374151',
-    'page_bg': '#F8FAFC',
-    'card_bg': '#FFFFFF',
-    'border_color': '#E5E7EB',
+THEME_SURFACES = {
+    'premium_dark': {
+        'page_bg': '#F8FAFC',
+        'page_bg_alt': '#EEF4FA',
+        'section_bg': '#F1F5F9',
+        'accent_soft': '#DBEAFE',
+        'hero_bg': '#02070F',
+    },
+    'trust_navy': {
+        'page_bg': '#F8FAFC',
+        'page_bg_alt': '#EEF4FA',
+        'section_bg': '#F1F5F9',
+        'accent_soft': '#DBEAFE',
+        'hero_bg': '#0B1F3A',
+    },
+    'modern_teal': {
+        'page_bg': '#F4FBFA',
+        'page_bg_alt': '#EAF7F5',
+        'section_bg': '#EFFAF8',
+        'accent_soft': '#CCFBF1',
+        'hero_bg': '#0F3D3E',
+    },
+    'executive_gold': {
+        'page_bg': '#FAF7EF',
+        'page_bg_alt': '#F2EEE3',
+        'section_bg': '#F8F3E7',
+        'accent_soft': '#F8EDC8',
+        'hero_bg': '#111827',
+    },
+    'default_blue': {
+        'page_bg': '#F8FAFC',
+        'page_bg_alt': '#EFF6FF',
+        'section_bg': '#F1F5F9',
+        'accent_soft': '#E0F2FE',
+        'hero_bg': '#0D6EFD',
+    },
+    'clean_blue': {
+        'page_bg': '#F8FAFC',
+        'page_bg_alt': '#EFF6FF',
+        'section_bg': '#F1F5F9',
+        'accent_soft': '#E0F2FE',
+        'hero_bg': '#0D6EFD',
+    },
+    'carrier_classic': {
+        'page_bg': '#F7FAFC',
+        'page_bg_alt': '#EDF4FA',
+        'section_bg': '#F2F7FB',
+        'accent_soft': '#FEF3C7',
+        'hero_bg': '#003366',
+    },
+    'custom': {
+        'page_bg': '#F8FAFC',
+        'page_bg_alt': '#F1F5F9',
+        'section_bg': '#F8FAFC',
+        'accent_soft': '#E0F2FE',
+        'hero_bg': '#02070F',
+    },
 }
 
 
@@ -75,6 +116,10 @@ def _hover_for(color):
     return _mix(color, '#FFFFFF', 0.12) if _relative_luminance(color) < 0.45 else _mix(color, '#000000', 0.12)
 
 
+def _soft_for(color):
+    return _mix(color, '#FFFFFF', 0.84)
+
+
 def get_theme_settings():
     """
     Get admin-managed theme settings as CSS-ready palette values.
@@ -85,19 +130,23 @@ def get_theme_settings():
     accent = get_setting('THEME_ACCENT_COLOR', preset['accent']) or preset['accent']
     use_smart_palette = get_setting('THEME_USE_SMART_PALETTE', True)
 
-    if use_smart_palette and theme_mode == 'premium_dark' and primary.upper() == '#02070F':
-        return DEFAULT_THEME.copy()
-
     button_text = _readable_text_for(primary)
     footer_text = '#CBD5E1' if _relative_luminance(primary) < 0.45 else '#374151'
+    surface = THEME_SURFACES.get(theme_mode, THEME_SURFACES['custom'])
+    primary_hover = '#0B1220' if primary.upper() == '#02070F' else _hover_for(primary)
+    accent_hover = '#2563EB' if accent.upper() == '#3B82F6' else _hover_for(accent)
+    accent_soft = surface.get('accent_soft') if use_smart_palette else _soft_for(accent)
 
     return {
         'primary': primary,
-        'primary_hover': _hover_for(primary),
+        'primary_hover': primary_hover,
+        'primary_soft': _soft_for(primary),
         'accent': accent,
-        'accent_hover': _hover_for(accent),
+        'accent_hover': accent_hover,
+        'accent_soft': accent_soft,
         'button_bg': primary,
         'button_text': button_text,
+        'button_hover_bg': primary_hover,
         'navbar_bg': primary,
         'navbar_text': button_text,
         'navbar_link_hover': _mix(accent, '#FFFFFF', 0.25) if _relative_luminance(primary) < 0.45 else _hover_for(accent),
@@ -106,8 +155,17 @@ def get_theme_settings():
         'link_color': accent,
         'heading_color': '#111827',
         'body_text': '#374151',
-        'page_bg': '#F8FAFC',
+        'page_bg': surface['page_bg'],
+        'page_bg_alt': surface['page_bg_alt'],
+        'section_bg': surface['section_bg'],
         'card_bg': '#FFFFFF',
+        'card_border': _mix(accent, '#E5E7EB', 0.25),
+        'card_shadow': '0 16px 40px rgba(15, 23, 42, 0.08)',
+        'hero_bg': surface['hero_bg'],
+        'hero_text': '#FFFFFF',
+        'muted_text': '#64748B',
+        'icon_bg': accent_soft,
+        'icon_color': primary,
         'border_color': '#E5E7EB',
     }
 

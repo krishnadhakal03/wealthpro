@@ -5,6 +5,8 @@
         trust_navy: { primary: "#0B1F3A", accent: "#2F80ED" },
         modern_teal: { primary: "#0F3D3E", accent: "#2DD4BF" },
         executive_gold: { primary: "#111827", accent: "#D4AF37" },
+        clean_blue: { primary: "#0D6EFD", accent: "#38BDF8" },
+        carrier_classic: { primary: "#003366", accent: "#F2B705" },
     };
 
     function syncPalette() {

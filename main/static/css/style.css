@@ -7,10 +7,13 @@
     --gray: #6c757d;
     --wp-primary: #02070F;
     --wp-primary-hover: #0B1220;
+    --wp-primary-soft: #E2E8F0;
     --wp-accent: #3B82F6;
     --wp-accent-hover: #2563EB;
+    --wp-accent-soft: #DBEAFE;
     --wp-button-bg: #02070F;
     --wp-button-text: #FFFFFF;
+    --wp-button-hover-bg: #0B1220;
     --wp-navbar-bg: #02070F;
     --wp-navbar-text: #FFFFFF;
     --wp-navbar-link-hover: #60A5FA;
@@ -20,8 +23,17 @@
     --wp-heading-color: #111827;
     --wp-body-text: #374151;
     --wp-page-bg: #F8FAFC;
+    --wp-page-bg-alt: #EEF4FA;
+    --wp-section-bg: #F1F5F9;
     --wp-card-bg: #FFFFFF;
+    --wp-card-border: #E5E7EB;
+    --wp-card-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
     --wp-border-color: #E5E7EB;
+    --wp-hero-bg: #02070F;
+    --wp-hero-text: #FFFFFF;
+    --wp-muted-text: #64748B;
+    --wp-icon-bg: #DBEAFE;
+    --wp-icon-color: #02070F;
 }
 
 /* General Styles */
@@ -56,6 +68,31 @@ a:hover {
     color: var(--wp-accent) !important;
 }
 
+.section-title h6 {
+    font-weight: 700;
+    letter-spacing: 0;
+}
+
+.section-title h1 {
+    color: var(--wp-heading-color);
+}
+
+.section-title::after {
+    content: "";
+    display: block;
+    width: 58px;
+    height: 3px;
+    margin-top: 0.75rem;
+    background: var(--wp-accent);
+    border-radius: 999px;
+}
+
+.section-title.text-center::after,
+.text-center .section-title::after {
+    margin-left: auto;
+    margin-right: auto;
+}
+
 .bg-primary {
     background-color: var(--wp-primary) !important;
 }
@@ -75,12 +112,29 @@ a:hover {
     background-color: var(--wp-button-bg);
     border-color: var(--wp-button-bg);
     color: var(--wp-button-text);
+    box-shadow: 0 10px 22px rgba(15, 23, 42, 0.14);
 }
 
 .btn-primary:hover {
-    background-color: var(--wp-primary-hover);
-    border-color: var(--wp-primary-hover);
+    background-color: var(--wp-button-hover-bg);
+    border-color: var(--wp-button-hover-bg);
     color: var(--wp-button-text);
+    transform: translateY(-1px);
+}
+
+.btn-primary:focus,
+.btn-primary:active {
+    background-color: var(--wp-button-hover-bg) !important;
+    border-color: var(--wp-button-hover-bg) !important;
+    color: var(--wp-button-text) !important;
+    box-shadow: 0 0 0 0.25rem color-mix(in srgb, var(--wp-accent) 28%, transparent) !important;
+}
+
+.btn-primary:disabled,
+.btn-primary.disabled {
+    background-color: var(--wp-primary-soft);
+    border-color: var(--wp-primary-soft);
+    color: var(--wp-body-text);
 }
 
 .btn-secondary {
@@ -103,6 +157,10 @@ a:hover {
 
 .navbar-container {
     padding-left: 5px;
+}
+
+.site-navbar .navbar-collapse {
+    background-color: var(--wp-navbar-bg);
 }
 
 .navbar-brand {
@@ -201,7 +259,7 @@ a:hover {
 
 .copyright {
     padding: 1.5rem 0;
-    border-top: 1px solid rgba(255,255,255,0.1);
+    border-top: 1px solid color-mix(in srgb, var(--wp-footer-text) 22%, transparent);
 }
 
 .footer-menu a {
@@ -228,6 +286,23 @@ a:hover {
 
 .back-to-top.show {
     display: flex;
+}
+
+.back-to-top:hover {
+    background-color: var(--wp-button-hover-bg);
+    border-color: var(--wp-button-hover-bg);
+    color: var(--wp-button-text);
+}
+
+.hero-header,
+.container-fluid.bg-primary.hero-header {
+    background: linear-gradient(135deg, var(--wp-hero-bg), var(--wp-primary-hover)) !important;
+    color: var(--wp-hero-text);
+}
+
+.hero-header h1,
+.hero-header p {
+    color: var(--wp-hero-text);
 }
 
 /* Home Page Styles */
@@ -291,11 +366,16 @@ a:hover {
 .info-box, .feature-box {
     transition: all 0.3s ease;
     height: 100%;
+    background-color: var(--wp-card-bg) !important;
+    border: 1px solid var(--wp-card-border);
+    border-radius: 12px !important;
+    box-shadow: var(--wp-card-shadow) !important;
 }
 
 .info-box:hover, .feature-box:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    transform: translateY(-3px);
+    border-color: var(--wp-accent);
+    box-shadow: 0 20px 48px rgba(15, 23, 42, 0.12) !important;
 }
 
 .info-box img {
@@ -312,16 +392,18 @@ a:hover {
 /* Services Page Styles */
 .service-item {
     padding: 2rem;
-    border-radius: 8px;
+    border-radius: 12px;
     background-color: var(--wp-card-bg);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    border: 1px solid var(--wp-card-border);
+    box-shadow: var(--wp-card-shadow);
     transition: all 0.3s ease;
     height: 100%;
 }
 
 .service-item:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+    transform: translateY(-3px);
+    border-color: var(--wp-accent);
+    box-shadow: 0 20px 48px rgba(15, 23, 42, 0.12);
 }
 
 .service-item img {
@@ -346,17 +428,53 @@ a:hover {
     box-shadow: 0 5px 15px rgba(0,0,0,0.1);
 }
 
+.team-card,
+.card {
+    background-color: var(--wp-card-bg);
+    border: 1px solid var(--wp-card-border) !important;
+    border-radius: 12px !important;
+    box-shadow: var(--wp-card-shadow) !important;
+}
+
+.team-card:hover,
+.card:hover {
+    border-color: var(--wp-accent) !important;
+}
+
+.team-contact-icon,
+.insurance-icon {
+    background-color: var(--wp-icon-bg) !important;
+    color: var(--wp-icon-color) !important;
+}
+
 /* Contact Page Styles */
 .contact-info i {
     width: 45px;
     height: 45px;
-    background-color: var(--wp-primary);
-    color: var(--wp-button-text);
+    background-color: var(--wp-icon-bg);
+    color: var(--wp-icon-color);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     margin-right: 1rem;
+}
+
+.contact-info,
+.contact-form,
+.appointment-form,
+.calculator-section,
+.result-box,
+.alert-info {
+    background-color: var(--wp-card-bg) !important;
+    border: 1px solid var(--wp-card-border) !important;
+    border-radius: 12px;
+    box-shadow: var(--wp-card-shadow);
+}
+
+.text-muted,
+.form-text {
+    color: var(--wp-muted-text) !important;
 }
 
 .form-control:focus {
@@ -367,9 +485,18 @@ a:hover {
 /* Videos Page Styles */
 .video-item {
     margin-bottom: 2rem;
-    border-radius: 8px;
+    border-radius: 12px;
     overflow: hidden;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    background-color: var(--wp-card-bg);
+    border: 1px solid var(--wp-card-border);
+    box-shadow: var(--wp-card-shadow);
+    transition: all 0.3s ease;
+}
+
+.video-item:hover {
+    transform: translateY(-3px);
+    border-color: var(--wp-accent);
+    box-shadow: 0 20px 48px rgba(15, 23, 42, 0.12);
 }
 
 .video-title {
@@ -419,8 +546,18 @@ a:hover {
 .appointment-form {
     background-color: var(--wp-card-bg);
     padding: 2rem;
-    border-radius: 8px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    border-radius: 12px;
+    border: 1px solid var(--wp-card-border);
+    box-shadow: var(--wp-card-shadow);
+}
+
+.bg-light {
+    background-color: var(--wp-page-bg-alt) !important;
+}
+
+.form-control,
+.form-select {
+    border-color: var(--wp-card-border);
 }
 
 
