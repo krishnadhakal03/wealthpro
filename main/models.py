@@ -1,4 +1,8 @@
+import re
+
+from django.core.exceptions import ValidationError
 from django.db import models
+from django.utils import timezone
 
 # Create your models here.
 class ToDoList(models.Model):
@@ -569,6 +573,32 @@ class DisclaimerText(models.Model):
 
 class SiteSettings(models.Model):
     """Model to store global site settings that can be updated from admin"""
+    THEME_MODE_CHOICES = [
+        ('default_blue', 'Default Blue'),
+        ('premium_dark', 'Premium Dark'),
+        ('trust_navy', 'Trust Navy'),
+        ('modern_teal', 'Modern Teal'),
+        ('executive_gold', 'Executive Gold'),
+        ('clean_blue', 'Clean Blue'),
+        ('carrier_classic', 'Carrier Classic'),
+        ('custom', 'Custom'),
+    ]
+    THEME_FIELDS = [
+        'theme_mode',
+        'theme_primary_color',
+        'theme_accent_color',
+        'theme_use_smart_palette',
+    ]
+    THEME_PRESET_COLORS = {
+        'default_blue': {'primary': '#0D6EFD', 'accent': '#38BDF8'},
+        'premium_dark': {'primary': '#02070F', 'accent': '#3B82F6'},
+        'trust_navy': {'primary': '#0B1F3A', 'accent': '#2F80ED'},
+        'modern_teal': {'primary': '#0F3D3E', 'accent': '#2DD4BF'},
+        'executive_gold': {'primary': '#111827', 'accent': '#D4AF37'},
+        'clean_blue': {'primary': '#0D6EFD', 'accent': '#38BDF8'},
+        'carrier_classic': {'primary': '#003366', 'accent': '#F2B705'},
+    }
+
     site_name = models.CharField(max_length=200, default="Next Generation Wealth Pro")
     site_tagline = models.CharField(max_length=200, default="Wealth Management")
     
@@ -662,6 +692,35 @@ class SiteSettings(models.Model):
         default="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3022.9663095343016!2d-74.00425882426698!3d40.71116937132799!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c25a23e28c1191%3A0x49f75d3281df052a!2s150%20Park%20Row%2C%20New%20York%2C%20NY%2010007%2C%20USA!5e0!3m2!1sen!2sbg!4v1685637930992!5m2!1sen!2sbg",
         help_text="Google Maps embed URL for contact page"
     )
+
+    # Site Color / Branding
+    theme_mode = models.CharField(
+        max_length=30,
+        choices=THEME_MODE_CHOICES,
+        default='premium_dark',
+        help_text="Choose a preset or Custom for admin-managed site branding colors."
+    )
+    theme_primary_color = models.CharField(
+        max_length=7,
+        default="#02070F",
+        help_text="Primary color controls the main brand, navigation, and button tone. Use #RGB or #RRGGBB."
+    )
+    theme_accent_color = models.CharField(
+        max_length=7,
+        default="#3B82F6",
+        help_text="Accent color controls highlights, hover states, and links. Use #RGB or #RRGGBB."
+    )
+    theme_use_smart_palette = models.BooleanField(
+        default=True,
+        help_text="Smart palette keeps contrast and readability safe across navigation, buttons, footer, and links."
+    )
+    theme_previous_palette_json = models.JSONField(
+        blank=True,
+        null=True,
+        help_text="Previous palette values are saved before theme changes for manual rollback."
+    )
+    theme_previous_palette_saved_at = models.DateTimeField(blank=True, null=True)
+    theme_updated_at = models.DateTimeField(blank=True, null=True)
     
     # Business Hours
     business_hours_weekdays = models.CharField(max_length=100, default="9:00 AM - 5:00 PM", 
@@ -670,6 +729,16 @@ class SiteSettings(models.Model):
                                              help_text="Business hours for Saturday")
     business_hours_sunday = models.CharField(max_length=100, default="Closed", 
                                            help_text="Business hours for Sunday")
+    
+    # Navigation / Disclaimer
+    show_disclaimer_bar = models.BooleanField(default=True, 
+                                            help_text="Show scrolling disclaimer bar below navbar")
+    disclaimer_text = models.TextField(default="This site is for educational purposes only.", 
+                                     help_text="Text to display in the disclaimer bar")
+    disclaimer_scroll_enabled = models.BooleanField(default=True, 
+                                                  help_text="Enable horizontal scrolling animation for disclaimer text")
+    show_insurance_calculator_menu = models.BooleanField(default=True, 
+                                                       help_text="Show Insurance Calculator menu item in navigation")
     
     # Security Settings
     enable_csrf_protection = models.BooleanField(default=True, 
@@ -689,23 +758,80 @@ class SiteSettings(models.Model):
     
     def __str__(self):
         return f"Site Settings - {self.site_name}"
+
+    @staticmethod
+    def normalize_hex_color(value):
+        color = (value or '').strip().upper()
+        if re.fullmatch(r'#[0-9A-F]{3}', color):
+            return '#' + ''.join(char * 2 for char in color[1:])
+        if re.fullmatch(r'#[0-9A-F]{6}', color):
+            return color
+        raise ValidationError("Enter a valid hex color in #RGB or #RRGGBB format.")
+
+    def clean(self):
+        super().clean()
+        if self.theme_use_smart_palette and self.theme_mode in self.THEME_PRESET_COLORS:
+            preset = self.THEME_PRESET_COLORS[self.theme_mode]
+            self.theme_primary_color = preset['primary']
+            self.theme_accent_color = preset['accent']
+
+        errors = {}
+        try:
+            self.theme_primary_color = self.normalize_hex_color(self.theme_primary_color)
+        except ValidationError as exc:
+            errors['theme_primary_color'] = exc.messages
+
+        try:
+            self.theme_accent_color = self.normalize_hex_color(self.theme_accent_color)
+        except ValidationError as exc:
+            errors['theme_accent_color'] = exc.messages
+
+        if errors:
+            raise ValidationError(errors)
+
+    def _theme_snapshot(self):
+        return {
+            'theme_mode': self.theme_mode,
+            'theme_primary_color': self.theme_primary_color,
+            'theme_accent_color': self.theme_accent_color,
+            'theme_use_smart_palette': self.theme_use_smart_palette,
+        }
     
     def save(self, *args, **kwargs):
+        self.clean()
+
         # Ensure there's only one instance of site settings
         if SiteSettings.objects.exists() and not self.pk:
             raise ValueError("There can only be one SiteSettings instance")
+
+        if self.pk:
+            old_settings = SiteSettings.objects.filter(pk=self.pk).first()
+            if old_settings:
+                old_snapshot = old_settings._theme_snapshot()
+                if old_snapshot != self._theme_snapshot():
+                    self.theme_previous_palette_json = old_snapshot
+                    self.theme_previous_palette_saved_at = timezone.now()
+                    self.theme_updated_at = timezone.now()
+        elif not self.theme_updated_at:
+            self.theme_updated_at = timezone.now()
         
-        # Clear settings cache when saving
         from main.settings_registry import clear_settings_cache
+        saved = super().save(*args, **kwargs)
         clear_settings_cache()
-        
-        return super().save(*args, **kwargs)
+        return saved
     
     @classmethod
     def get_settings(cls):
         """Get or create site settings"""
         settings, created = cls.objects.get_or_create()
         return settings
+
+
+class SiteColorBranding(SiteSettings):
+    class Meta:
+        proxy = True
+        verbose_name = "Site Color / Branding"
+        verbose_name_plural = "Site Color / Branding"
 
 
 

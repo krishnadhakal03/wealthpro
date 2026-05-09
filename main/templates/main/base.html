@@ -25,6 +25,43 @@
     
     <!-- Custom CSS -->
   <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        :root {
+            --wp-primary: {{ theme.primary|default:"#02070F" }};
+            --wp-primary-hover: {{ theme.primary_hover|default:"#0B1220" }};
+            --wp-primary-soft: {{ theme.primary_soft|default:"#E2E8F0" }};
+            --wp-accent: {{ theme.accent|default:"#3B82F6" }};
+            --wp-accent-hover: {{ theme.accent_hover|default:"#2563EB" }};
+            --wp-accent-soft: {{ theme.accent_soft|default:"#DBEAFE" }};
+            --wp-button-bg: {{ theme.button_bg|default:"#02070F" }};
+            --wp-button-text: {{ theme.button_text|default:"#FFFFFF" }};
+            --wp-button-hover-bg: {{ theme.button_hover_bg|default:"#0B1220" }};
+            --wp-navbar-bg: {{ theme.navbar_bg|default:"#02070F" }};
+            --wp-navbar-text: {{ theme.navbar_text|default:"#FFFFFF" }};
+            --wp-navbar-link-hover: {{ theme.navbar_link_hover|default:"#60A5FA" }};
+            --wp-navbar-border: {{ theme.navbar_border|default:"#343A46" }};
+            --wp-footer-bg: {{ theme.footer_bg|default:"#02070F" }};
+            --wp-footer-text: {{ theme.footer_text|default:"#CBD5E1" }};
+            --wp-link-color: {{ theme.link_color|default:"#2563EB" }};
+            --wp-heading-color: {{ theme.heading_color|default:"#111827" }};
+            --wp-body-text: {{ theme.body_text|default:"#374151" }};
+            --wp-page-bg: {{ theme.page_bg|default:"#F8FAFC" }};
+            --wp-page-bg-alt: {{ theme.page_bg_alt|default:"#EEF4FA" }};
+            --wp-section-bg: {{ theme.section_bg|default:"#F1F5F9" }};
+            --wp-card-bg: {{ theme.card_bg|default:"#FFFFFF" }};
+            --wp-card-border: {{ theme.card_border|default:"#E5E7EB" }};
+            --wp-card-shadow: {{ theme.card_shadow|default:"0 16px 40px rgba(15, 23, 42, 0.08)" }};
+            --wp-border-color: {{ theme.border_color|default:"#E5E7EB" }};
+            --wp-hero-bg: {{ theme.hero_bg|default:"#02070F" }};
+            --wp-hero-gradient-start: {{ theme.hero_gradient_start|default:"#111827" }};
+            --wp-hero-gradient-end: {{ theme.hero_gradient_end|default:"#0B1220" }};
+            --wp-hero-accent: {{ theme.hero_accent|default:"#3B82F6" }};
+            --wp-hero-text: {{ theme.hero_text|default:"#FFFFFF" }};
+            --wp-muted-text: {{ theme.muted_text|default:"#64748B" }};
+            --wp-icon-bg: {{ theme.icon_bg|default:"#DBEAFE" }};
+            --wp-icon-color: {{ theme.icon_color|default:"#02070F" }};
+        }
+    </style>
     
     <!-- Favicon -->
     {% if site_settings.favicon %}
@@ -51,7 +88,7 @@
 </head>
 <body {% block hclass %}{% endblock %}>
     <!-- Navbar Start -->
-    <nav class="navbar navbar-expand-lg bg-white navbar-light shadow sticky-top p-0">
+    <nav class="navbar navbar-expand-lg navbar-light shadow sticky-top p-0 site-navbar">
         <div class="container navbar-container">
             <a href="{% url 'home' %}" class="navbar-brand d-flex align-items-center">
                 {% if site_settings.company_logo %}
@@ -70,7 +107,9 @@
                     <a href="{% url 'services' %}" class="nav-item nav-link"><i class="fa fa-briefcase me-2"></i>Services</a>
                     <a href="{% url 'team' %}" class="nav-item nav-link"><i class="fa fa-users me-2"></i>Our Team</a>
                     <a href="{% url 'videos' %}" class="nav-item nav-link"><i class="fa fa-video me-2"></i>Videos</a>
+                    {% if site_settings.show_insurance_calculator_menu %}
                     <a href="{% url 'insurance_calculator' %}" class="nav-item nav-link"><i class="fa fa-calculator me-2"></i>Insurance Calculator</a>
+                    {% endif %}
                     <a href="{% url 'appointment' %}" class="nav-item nav-link"><i class="fa fa-calendar me-2"></i>Appointment</a>
                     <a href="{% url 'contact' %}" class="nav-item nav-link"><i class="fa fa-envelope me-2"></i>Contact</a>
                 </div>
@@ -78,6 +117,16 @@
         </div>
     </nav>
     <!-- Navbar End -->
+
+    {% if site_settings.show_disclaimer_bar and site_settings.disclaimer_text %}
+    <!-- Disclaimer Bar Start -->
+    <div class="site-disclaimer-bar {% if site_settings.disclaimer_scroll_enabled %}is-scrolling{% endif %}">
+        <div class="site-disclaimer-inner">
+            <span>{{ site_settings.disclaimer_text }}</span>
+        </div>
+    </div>
+    <!-- Disclaimer Bar End -->
+    {% endif %}
 
     {% block hero %}{% endblock %}
 

@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.utils.html import mark_safe, format_html
-from .models import Videos, HomeInfoSection, HomeSliderImage, Team, FooterSection, ServicesSection, Appointment, BusinessContact, Contactus, VideoDirect, ZoomCredentials, ZoomAvailableSlot, InsuranceType, InsuranceBaseRate, InsuranceInvestmentReturn, StateRateAdjustment, SiteSettings, CSOMortalityTable, InsuranceRiskFactor, RiskFactorValue, StateRegulation, DisclaimerText
+from .models import Videos, HomeInfoSection, HomeSliderImage, Team, FooterSection, ServicesSection, Appointment, BusinessContact, Contactus, VideoDirect, ZoomCredentials, ZoomAvailableSlot, InsuranceType, InsuranceBaseRate, InsuranceInvestmentReturn, StateRateAdjustment, SiteSettings, SiteColorBranding, CSOMortalityTable, InsuranceRiskFactor, RiskFactorValue, StateRegulation, DisclaimerText
 import os
 import datetime
 import subprocess
@@ -8,7 +8,7 @@ from django.http import HttpResponse
 from django.contrib import messages
 from django.conf import settings
 from django.urls import path, reverse
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.template.response import TemplateResponse
 from django.contrib.admin.views.decorators import staff_member_required
 from django.utils.decorators import method_decorator
@@ -284,9 +284,32 @@ class SiteSettingsAdmin(admin.ModelAdmin):
             'fields': ('google_maps_embed_url',),
             'description': 'Google Maps embed URL for contact page'
         }),
+        ('Site Color / Branding', {
+            'fields': (
+                'theme_mode',
+                'theme_primary_color',
+                'theme_accent_color',
+                'theme_use_smart_palette',
+                'theme_previous_palette_json',
+                'theme_previous_palette_saved_at',
+                'theme_updated_at',
+            ),
+            'description': (
+                'Primary color controls the main brand/nav/button tone. Accent color controls highlights, '
+                'hover states, and links. Smart palette keeps contrast/readability safe. Previous palette is '
+                'saved before changes for manual rollback. Insurance/financial-branding inspired presets: '
+                'Premium Dark primary #02070F accent #3B82F6; Trust Navy primary #0B1F3A accent #2F80ED; '
+                'Modern Teal primary #0F3D3E accent #2DD4BF; Executive Gold primary #111827 accent #D4AF37; '
+                'Clean Blue primary #0D6EFD accent #38BDF8; Carrier Classic primary #003366 accent #F2B705.'
+            )
+        }),
         ('Business Hours', {
             'fields': ('business_hours_weekdays', 'business_hours_saturday', 'business_hours_sunday'),
             'description': 'Store hours displayed on the contact page'
+        }),
+        ('Navigation / Disclaimer', {
+            'fields': ('show_disclaimer_bar', 'disclaimer_text', 'disclaimer_scroll_enabled', 'show_insurance_calculator_menu'),
+            'description': 'Control navigation menu items and disclaimer bar display'
         }),
         ('Security Settings', {
             'fields': ('enable_csrf_protection', 'enable_secure_cookies', 'enable_ssl_redirect'),
@@ -300,7 +323,13 @@ class SiteSettingsAdmin(admin.ModelAdmin):
         }),
     )
     
-    readonly_fields = ('created_at', 'updated_at')
+    readonly_fields = (
+        'created_at',
+        'updated_at',
+        'theme_previous_palette_json',
+        'theme_previous_palette_saved_at',
+        'theme_updated_at',
+    )
     
     actions = ['refresh_settings_cache', 'export_db_as_sqlite']
     
@@ -356,6 +385,104 @@ class SiteSettingsAdmin(admin.ModelAdmin):
             return export_db_as_sqlite(self, request, None)
         
         return TemplateResponse(request, 'admin/database_backup.html', context)
+
+
+@admin.register(SiteColorBranding)
+class SiteColorBrandingAdmin(admin.ModelAdmin):
+    fields = (
+        'palette_preview',
+        'theme_mode',
+        'theme_primary_color',
+        'theme_accent_color',
+        'theme_use_smart_palette',
+        'theme_previous_palette_json',
+        'theme_previous_palette_saved_at',
+        'theme_updated_at',
+    )
+    readonly_fields = (
+        'palette_preview',
+        'theme_previous_palette_json',
+        'theme_previous_palette_saved_at',
+        'theme_updated_at',
+    )
+
+    class Media:
+        js = ('js/site_color_branding_admin.js',)
+
+    def formfield_for_dbfield(self, db_field, request, **kwargs):
+        formfield = super().formfield_for_dbfield(db_field, request, **kwargs)
+        help_text = {
+            'theme_mode': (
+                'Financial/insurance-inspired presets: Premium Dark - #02070F / #3B82F6; '
+                'Trust Navy - #0B1F3A / #2F80ED; Modern Teal - #0F3D3E / #2DD4BF; '
+                'Executive Gold - #111827 / #D4AF37; Clean Blue - #0D6EFD / #38BDF8; '
+                'Carrier Classic - #003366 / #F2B705.'
+            ),
+            'theme_primary_color': 'Controls main brand, navbar, buttons, and footer.',
+            'theme_accent_color': 'Controls highlights, active menu items, icons, and links.',
+            'theme_use_smart_palette': 'Automatically creates readable matching surfaces and hover states.',
+        }
+        labels = {
+            'theme_mode': 'Theme Mode',
+            'theme_primary_color': 'Primary Color',
+            'theme_accent_color': 'Accent Color',
+            'theme_use_smart_palette': 'Smart Palette',
+        }
+        if db_field.name in help_text:
+            formfield.help_text = help_text[db_field.name]
+        if db_field.name in labels:
+            formfield.label = labels[db_field.name]
+        return formfield
+
+    def palette_preview(self, obj):
+        if not obj or not obj.pk:
+            return "Save this palette to preview generated surfaces."
+
+        from main.settings_service import get_theme_settings
+        theme = get_theme_settings()
+        items = [
+            ('Primary', theme['primary']),
+            ('Accent', theme['accent']),
+            ('Navbar', theme['navbar_bg']),
+            ('Button', theme['button_bg']),
+            ('Page Background', theme['page_bg']),
+            ('Card Background', theme['card_bg']),
+            ('Footer', theme['footer_bg']),
+        ]
+        swatches = ''.join(
+            f'<div style="display:inline-flex;align-items:center;margin:0 14px 10px 0;">'
+            f'<span style="width:34px;height:22px;border-radius:4px;border:1px solid #d0d7de;'
+            f'background:{color};display:inline-block;margin-right:6px;"></span>'
+            f'<span>{label}<br><code>{color}</code></span></div>'
+            for label, color in items
+        )
+        return mark_safe(
+            '<div style="padding:12px;border:1px solid #d0d7de;border-radius:6px;'
+            'background:#fff;">'
+            '<strong>Palette Preview</strong><br>'
+            '<span style="color:#57606a;">Previous Palette is saved automatically before changes for manual rollback.</span><br><br>'
+            f'{swatches}</div>'
+        )
+    palette_preview.short_description = "Palette Preview"
+
+    def has_add_permission(self, request):
+        return not SiteSettings.objects.exists()
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def changelist_view(self, request, extra_context=None):
+        settings_obj = SiteSettings.objects.first()
+        if settings_obj:
+            return redirect(reverse('admin:main_sitecolorbranding_change', args=[settings_obj.pk]))
+        return redirect(reverse('admin:main_sitecolorbranding_add'))
+
+    def response_add(self, request, obj, post_url_continue=None):
+        return redirect(reverse('admin:main_sitecolorbranding_change', args=[obj.pk]))
+
+    def response_change(self, request, obj):
+        self.message_user(request, "Site Color / Branding saved.")
+        return redirect(reverse('admin:main_sitecolorbranding_change', args=[obj.pk]))
 
 
 

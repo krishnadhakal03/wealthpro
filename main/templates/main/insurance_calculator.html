@@ -7,40 +7,41 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <style>
     .calculator-section {
-        background-color: #f8f9fa;
-        border-radius: 10px;
-        box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        background-color: var(--wp-card-bg);
+        border: 1px solid var(--wp-card-border);
+        border-radius: 12px;
+        box-shadow: var(--wp-card-shadow);
         padding: 30px;
         margin-bottom: 30px;
     }
     
     .insurance-type-card {
         cursor: pointer;
-        border: 2px solid #e9ecef;
+        border: 2px solid var(--wp-card-border);
         transition: all 0.3s ease;
         height: 100%;
     }
     
     .insurance-type-card:hover {
         transform: translateY(-5px);
-        border-color: #0d47a1;
+        border-color: var(--wp-accent);
     }
     
     .insurance-type-card.selected {
-        border-color: #0d47a1;
-        background-color: rgba(13, 71, 161, 0.05);
+        border-color: var(--wp-accent);
+        background-color: var(--wp-accent-soft);
     }
     
     .insurance-icon {
         font-size: 2rem;
-        color: #0d47a1;
+        color: var(--wp-accent);
         margin-bottom: 15px;
     }
     
     .result-box {
-        background-color: #0d47a1;
-        color: white;
-        border-radius: 10px;
+        background-color: var(--wp-primary);
+        color: var(--wp-button-text);
+        border-radius: 12px;
         padding: 25px;
         margin-top: 20px;
         display: block;
@@ -66,17 +67,18 @@
 
     .form-label {
         font-weight: 500;
-        color: #424242;
+        color: var(--wp-body-text);
     }
 
     .btn-primary {
-        background-color: #0d47a1;
-        border-color: #0d47a1;
+        background-color: var(--wp-button-bg);
+        border-color: var(--wp-button-bg);
+        color: var(--wp-button-text);
     }
 
     .btn-primary:hover {
-        background-color: #083677;
-        border-color: #083677;
+        background-color: var(--wp-button-hover-bg);
+        border-color: var(--wp-button-hover-bg);
     }
 
     .state-factor {
@@ -86,9 +88,8 @@
         margin-top: 10px;
     }
     
-    /* Override Bootstrap's bg-primary with our darker blue */
     .bg-primary {
-        background-color: #0d47a1 !important;
+        background-color: var(--wp-primary) !important;
     }
     
     /* Loading spinner */

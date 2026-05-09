@@ -1,6 +1,7 @@
 from django.core.cache import cache
 from .models import SiteSettings
 from .settings_registry import settings_registry
+from .settings_service import get_theme_settings
 import logging
 
 logger = logging.getLogger(__name__)
@@ -17,9 +18,12 @@ def site_settings(request):
         registry_settings = settings_registry.get_all()
         
         # Return context dict with both the model instance and registry settings
+        theme = get_theme_settings()
         return {
             'site_settings': settings_model,
-            'settings': registry_settings
+            'settings': registry_settings,
+            'theme': theme,
+            'theme_settings': theme,
         }
     except Exception as e:
         # Log the error and return empty dict
