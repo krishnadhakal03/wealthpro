@@ -159,7 +159,7 @@ def get_theme_settings():
         'page_bg_alt': surface['page_bg_alt'],
         'section_bg': surface['section_bg'],
         'card_bg': '#FFFFFF',
-        'card_border': _mix(accent, '#E5E7EB', 0.25),
+        'card_border': _mix(accent, '#E5E7EB', 0.88),
         'card_shadow': '0 16px 40px rgba(15, 23, 42, 0.08)',
         'hero_bg': surface['hero_bg'],
         'hero_text': '#FFFFFF',

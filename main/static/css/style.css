@@ -374,7 +374,7 @@ a:hover {
 
 .info-box:hover, .feature-box:hover {
     transform: translateY(-3px);
-    border-color: var(--wp-accent);
+    border-color: color-mix(in srgb, var(--wp-accent) 38%, var(--wp-card-border));
     box-shadow: 0 20px 48px rgba(15, 23, 42, 0.12) !important;
 }
 
@@ -402,7 +402,7 @@ a:hover {
 
 .service-item:hover {
     transform: translateY(-3px);
-    border-color: var(--wp-accent);
+    border-color: color-mix(in srgb, var(--wp-accent) 38%, var(--wp-card-border));
     box-shadow: 0 20px 48px rgba(15, 23, 42, 0.12);
 }
 
@@ -438,7 +438,7 @@ a:hover {
 
 .team-card:hover,
 .card:hover {
-    border-color: var(--wp-accent) !important;
+    border-color: color-mix(in srgb, var(--wp-accent) 38%, var(--wp-card-border)) !important;
 }
 
 .team-contact-icon,
@@ -495,7 +495,7 @@ a:hover {
 
 .video-item:hover {
     transform: translateY(-3px);
-    border-color: var(--wp-accent);
+    border-color: color-mix(in srgb, var(--wp-accent) 38%, var(--wp-card-border));
     box-shadow: 0 20px 48px rgba(15, 23, 42, 0.12);
 }
 
