@@ -237,7 +237,7 @@ a:hover {
 }
 
 .site-disclaimer-bar.is-scrolling .site-disclaimer-inner {
-    animation: scroll-left 20s linear infinite;
+    animation: scroll-left var(--wp-disclaimer-scroll-duration, 20s) linear infinite;
 }
 
 .site-disclaimer-bar:not(.is-scrolling) .site-disclaimer-inner {

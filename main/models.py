@@ -737,6 +737,10 @@ class SiteSettings(models.Model):
                                      help_text="Text to display in the disclaimer bar")
     disclaimer_scroll_enabled = models.BooleanField(default=True, 
                                                   help_text="Enable horizontal scrolling animation for disclaimer text")
+    disclaimer_scroll_speed_seconds = models.PositiveIntegerField(
+        default=20,
+        help_text="Scrolling speed in seconds. Lower = faster, higher = slower. Recommended: 15-35."
+    )
     show_insurance_calculator_menu = models.BooleanField(default=True, 
                                                        help_text="Show Insurance Calculator menu item in navigation")
     

@@ -99,6 +99,7 @@ class SettingsRegistry:
             settings_dict['SHOW_DISCLAIMER_BAR'] = site_settings.show_disclaimer_bar
             settings_dict['DISCLAIMER_TEXT'] = site_settings.disclaimer_text
             settings_dict['DISCLAIMER_SCROLL_ENABLED'] = site_settings.disclaimer_scroll_enabled
+            settings_dict['DISCLAIMER_SCROLL_SPEED_SECONDS'] = site_settings.disclaimer_scroll_speed_seconds
             settings_dict['SHOW_INSURANCE_CALCULATOR_MENU'] = site_settings.show_insurance_calculator_menu
             
             # Company info
