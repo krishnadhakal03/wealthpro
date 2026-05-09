@@ -27,23 +27,23 @@
   <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <style>
         :root {
-            --wp-primary: {{ theme_settings.primary|default:"#02070F" }};
-            --wp-primary-hover: {{ theme_settings.primary_hover|default:"#0B1220" }};
-            --wp-accent: {{ theme_settings.accent|default:"#3B82F6" }};
-            --wp-accent-hover: {{ theme_settings.accent_hover|default:"#2563EB" }};
-            --wp-button-bg: {{ theme_settings.button_bg|default:"#02070F" }};
-            --wp-button-text: {{ theme_settings.button_text|default:"#FFFFFF" }};
-            --wp-navbar-bg: {{ theme_settings.navbar_bg|default:"#02070F" }};
-            --wp-navbar-text: {{ theme_settings.navbar_text|default:"#FFFFFF" }};
-            --wp-navbar-link-hover: {{ theme_settings.navbar_link_hover|default:"#60A5FA" }};
-            --wp-footer-bg: {{ theme_settings.footer_bg|default:"#02070F" }};
-            --wp-footer-text: {{ theme_settings.footer_text|default:"#CBD5E1" }};
-            --wp-link-color: {{ theme_settings.link_color|default:"#2563EB" }};
-            --wp-heading-color: {{ theme_settings.heading_color|default:"#111827" }};
-            --wp-body-text: {{ theme_settings.body_text|default:"#374151" }};
-            --wp-page-bg: {{ theme_settings.page_bg|default:"#F8FAFC" }};
-            --wp-card-bg: {{ theme_settings.card_bg|default:"#FFFFFF" }};
-            --wp-border-color: {{ theme_settings.border_color|default:"#E5E7EB" }};
+            --wp-primary: {{ theme.primary|default:"#02070F" }};
+            --wp-primary-hover: {{ theme.primary_hover|default:"#0B1220" }};
+            --wp-accent: {{ theme.accent|default:"#3B82F6" }};
+            --wp-accent-hover: {{ theme.accent_hover|default:"#2563EB" }};
+            --wp-button-bg: {{ theme.button_bg|default:"#02070F" }};
+            --wp-button-text: {{ theme.button_text|default:"#FFFFFF" }};
+            --wp-navbar-bg: {{ theme.navbar_bg|default:"#02070F" }};
+            --wp-navbar-text: {{ theme.navbar_text|default:"#FFFFFF" }};
+            --wp-navbar-link-hover: {{ theme.navbar_link_hover|default:"#60A5FA" }};
+            --wp-footer-bg: {{ theme.footer_bg|default:"#02070F" }};
+            --wp-footer-text: {{ theme.footer_text|default:"#CBD5E1" }};
+            --wp-link-color: {{ theme.link_color|default:"#2563EB" }};
+            --wp-heading-color: {{ theme.heading_color|default:"#111827" }};
+            --wp-body-text: {{ theme.body_text|default:"#374151" }};
+            --wp-page-bg: {{ theme.page_bg|default:"#F8FAFC" }};
+            --wp-card-bg: {{ theme.card_bg|default:"#FFFFFF" }};
+            --wp-border-color: {{ theme.border_color|default:"#E5E7EB" }};
         }
     </style>
     
@@ -72,7 +72,7 @@
 </head>
 <body {% block hclass %}{% endblock %}>
     <!-- Navbar Start -->
-    <nav class="navbar navbar-expand-lg bg-white navbar-light shadow sticky-top p-0">
+    <nav class="navbar navbar-expand-lg navbar-light shadow sticky-top p-0 site-navbar">
         <div class="container navbar-container">
             <a href="{% url 'home' %}" class="navbar-brand d-flex align-items-center">
                 {% if site_settings.company_logo %}

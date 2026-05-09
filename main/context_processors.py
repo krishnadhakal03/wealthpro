@@ -18,10 +18,12 @@ def site_settings(request):
         registry_settings = settings_registry.get_all()
         
         # Return context dict with both the model instance and registry settings
+        theme = get_theme_settings()
         return {
             'site_settings': settings_model,
             'settings': registry_settings,
-            'theme_settings': get_theme_settings(),
+            'theme': theme,
+            'theme_settings': theme,
         }
     except Exception as e:
         # Log the error and return empty dict

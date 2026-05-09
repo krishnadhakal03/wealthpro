@@ -94,7 +94,8 @@ a:hover {
 }
 
 /* Navbar Styles */
-.navbar {
+.navbar,
+.site-navbar {
     background-color: var(--wp-navbar-bg) !important;
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     padding: 10px 0;
@@ -116,19 +117,23 @@ a:hover {
     font-size: 1.25rem;
 }
 
-.navbar-nav .nav-link {
+.navbar-nav .nav-link,
+.site-navbar .nav-link {
     font-weight: 600;
-    color: var(--wp-navbar-text);
+    color: var(--wp-navbar-text) !important;
     padding: 15px 20px;
 }
 
 .navbar-nav .nav-link:hover,
-.navbar-nav .nav-link.active {
-    color: var(--wp-navbar-link-hover);
+.navbar-nav .nav-link.active,
+.site-navbar .nav-link:hover,
+.site-navbar .nav-link.active {
+    color: var(--wp-navbar-link-hover) !important;
 }
 
 .navbar-brand h2,
-.navbar-brand .text-primary {
+.navbar-brand .text-primary,
+.site-navbar .navbar-brand h2 {
     color: var(--wp-navbar-text) !important;
 }
 
@@ -216,6 +221,9 @@ a:hover {
     display: flex;
     align-items: center;
     justify-content: center;
+    background-color: var(--wp-button-bg);
+    border-color: var(--wp-button-bg);
+    color: var(--wp-button-text);
 }
 
 .back-to-top.show {

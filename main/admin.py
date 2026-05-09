@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.utils.html import mark_safe, format_html
-from .models import Videos, HomeInfoSection, HomeSliderImage, Team, FooterSection, ServicesSection, Appointment, BusinessContact, Contactus, VideoDirect, ZoomCredentials, ZoomAvailableSlot, InsuranceType, InsuranceBaseRate, InsuranceInvestmentReturn, StateRateAdjustment, SiteSettings, CSOMortalityTable, InsuranceRiskFactor, RiskFactorValue, StateRegulation, DisclaimerText
+from .models import Videos, HomeInfoSection, HomeSliderImage, Team, FooterSection, ServicesSection, Appointment, BusinessContact, Contactus, VideoDirect, ZoomCredentials, ZoomAvailableSlot, InsuranceType, InsuranceBaseRate, InsuranceInvestmentReturn, StateRateAdjustment, SiteSettings, SiteColorBranding, CSOMortalityTable, InsuranceRiskFactor, RiskFactorValue, StateRegulation, DisclaimerText
 import os
 import datetime
 import subprocess
@@ -8,7 +8,7 @@ from django.http import HttpResponse
 from django.contrib import messages
 from django.conf import settings
 from django.urls import path, reverse
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.template.response import TemplateResponse
 from django.contrib.admin.views.decorators import staff_member_required
 from django.utils.decorators import method_decorator
@@ -381,6 +381,43 @@ class SiteSettingsAdmin(admin.ModelAdmin):
             return export_db_as_sqlite(self, request, None)
         
         return TemplateResponse(request, 'admin/database_backup.html', context)
+
+
+@admin.register(SiteColorBranding)
+class SiteColorBrandingAdmin(admin.ModelAdmin):
+    fields = (
+        'theme_mode',
+        'theme_primary_color',
+        'theme_accent_color',
+        'theme_use_smart_palette',
+        'theme_previous_palette_json',
+        'theme_previous_palette_saved_at',
+        'theme_updated_at',
+    )
+    readonly_fields = (
+        'theme_previous_palette_json',
+        'theme_previous_palette_saved_at',
+        'theme_updated_at',
+    )
+
+    def has_add_permission(self, request):
+        return not SiteSettings.objects.exists()
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def changelist_view(self, request, extra_context=None):
+        settings_obj = SiteSettings.objects.first()
+        if settings_obj:
+            return redirect(reverse('admin:main_sitecolorbranding_change', args=[settings_obj.pk]))
+        return redirect(reverse('admin:main_sitecolorbranding_add'))
+
+    def response_add(self, request, obj, post_url_continue=None):
+        return redirect(reverse('admin:main_sitecolorbranding_change', args=[obj.pk]))
+
+    def response_change(self, request, obj):
+        self.message_user(request, "Site Color / Branding saved.")
+        return redirect(reverse('admin:main_sitecolorbranding_change', args=[obj.pk]))
 
 
 

@@ -789,17 +789,23 @@ class SiteSettings(models.Model):
         elif not self.theme_updated_at:
             self.theme_updated_at = timezone.now()
         
-        # Clear settings cache when saving
         from main.settings_registry import clear_settings_cache
+        saved = super().save(*args, **kwargs)
         clear_settings_cache()
-        
-        return super().save(*args, **kwargs)
+        return saved
     
     @classmethod
     def get_settings(cls):
         """Get or create site settings"""
         settings, created = cls.objects.get_or_create()
         return settings
+
+
+class SiteColorBranding(SiteSettings):
+    class Meta:
+        proxy = True
+        verbose_name = "Site Color / Branding"
+        verbose_name_plural = "Site Color / Branding"
 
 
 
