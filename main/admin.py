@@ -284,6 +284,25 @@ class SiteSettingsAdmin(admin.ModelAdmin):
             'fields': ('google_maps_embed_url',),
             'description': 'Google Maps embed URL for contact page'
         }),
+        ('Site Color / Branding', {
+            'fields': (
+                'theme_mode',
+                'theme_primary_color',
+                'theme_accent_color',
+                'theme_use_smart_palette',
+                'theme_previous_palette_json',
+                'theme_previous_palette_saved_at',
+                'theme_updated_at',
+            ),
+            'description': (
+                'Primary color controls the main brand/nav/button tone. Accent color controls highlights, '
+                'hover states, and links. Smart palette keeps contrast/readability safe. Previous palette is '
+                'saved before changes for manual rollback. Insurance/financial-branding inspired presets: '
+                'Premium Dark primary #02070F accent #3B82F6; Trust Navy primary #0B1F3A accent #2F80ED; '
+                'Modern Teal primary #0F3D3E accent #2DD4BF; Executive Gold primary #111827 accent #D4AF37; '
+                'Clean Blue primary #0D6EFD accent #38BDF8; Carrier Classic primary #003366 accent #F2B705.'
+            )
+        }),
         ('Business Hours', {
             'fields': ('business_hours_weekdays', 'business_hours_saturday', 'business_hours_sunday'),
             'description': 'Store hours displayed on the contact page'
@@ -300,7 +319,13 @@ class SiteSettingsAdmin(admin.ModelAdmin):
         }),
     )
     
-    readonly_fields = ('created_at', 'updated_at')
+    readonly_fields = (
+        'created_at',
+        'updated_at',
+        'theme_previous_palette_json',
+        'theme_previous_palette_saved_at',
+        'theme_updated_at',
+    )
     
     actions = ['refresh_settings_cache', 'export_db_as_sqlite']
     

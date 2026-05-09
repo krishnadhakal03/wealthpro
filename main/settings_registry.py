@@ -84,6 +84,16 @@ class SettingsRegistry:
             
             # Google Analytics
             settings_dict['GOOGLE_ANALYTICS_ID'] = site_settings.google_analytics_id
+            settings_dict['GOOGLE_MAPS_EMBED_URL'] = site_settings.google_maps_embed_url
+
+            # Site Color / Branding
+            settings_dict['THEME_MODE'] = site_settings.theme_mode
+            settings_dict['THEME_PRIMARY_COLOR'] = site_settings.theme_primary_color
+            settings_dict['THEME_ACCENT_COLOR'] = site_settings.theme_accent_color
+            settings_dict['THEME_USE_SMART_PALETTE'] = site_settings.theme_use_smart_palette
+            settings_dict['THEME_PREVIOUS_PALETTE_JSON'] = site_settings.theme_previous_palette_json
+            settings_dict['THEME_PREVIOUS_PALETTE_SAVED_AT'] = site_settings.theme_previous_palette_saved_at
+            settings_dict['THEME_UPDATED_AT'] = site_settings.theme_updated_at
             
             # Company info
             settings_dict['ESTABLISHED_YEAR'] = site_settings.established_year

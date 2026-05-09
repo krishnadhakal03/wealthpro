@@ -10,6 +10,107 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+PRESET_THEME_PALETTES = {
+    'default_blue': {'primary': '#0D6EFD', 'accent': '#38BDF8'},
+    'premium_dark': {'primary': '#02070F', 'accent': '#3B82F6'},
+    'trust_navy': {'primary': '#0B1F3A', 'accent': '#2F80ED'},
+    'modern_teal': {'primary': '#0F3D3E', 'accent': '#2DD4BF'},
+    'executive_gold': {'primary': '#111827', 'accent': '#D4AF37'},
+    'custom': {'primary': '#02070F', 'accent': '#3B82F6'},
+}
+
+DEFAULT_THEME = {
+    'primary': '#02070F',
+    'primary_hover': '#0B1220',
+    'accent': '#3B82F6',
+    'accent_hover': '#2563EB',
+    'button_bg': '#02070F',
+    'button_text': '#FFFFFF',
+    'navbar_bg': '#02070F',
+    'navbar_text': '#FFFFFF',
+    'navbar_link_hover': '#60A5FA',
+    'footer_bg': '#02070F',
+    'footer_text': '#CBD5E1',
+    'link_color': '#2563EB',
+    'heading_color': '#111827',
+    'body_text': '#374151',
+    'page_bg': '#F8FAFC',
+    'card_bg': '#FFFFFF',
+    'border_color': '#E5E7EB',
+}
+
+
+def _hex_to_rgb(color):
+    value = color.strip().lstrip('#')
+    return tuple(int(value[index:index + 2], 16) for index in (0, 2, 4))
+
+
+def _rgb_to_hex(rgb):
+    return '#{:02X}{:02X}{:02X}'.format(*[max(0, min(255, int(channel))) for channel in rgb])
+
+
+def _mix(color, target, weight):
+    rgb = _hex_to_rgb(color)
+    target_rgb = _hex_to_rgb(target)
+    return _rgb_to_hex(
+        rgb[index] + (target_rgb[index] - rgb[index]) * weight
+        for index in range(3)
+    )
+
+
+def _relative_luminance(color):
+    rgb = [channel / 255 for channel in _hex_to_rgb(color)]
+    linear = [
+        channel / 12.92 if channel <= 0.03928 else ((channel + 0.055) / 1.055) ** 2.4
+        for channel in rgb
+    ]
+    return 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2]
+
+
+def _readable_text_for(color):
+    return '#FFFFFF' if _relative_luminance(color) < 0.45 else '#111827'
+
+
+def _hover_for(color):
+    return _mix(color, '#FFFFFF', 0.12) if _relative_luminance(color) < 0.45 else _mix(color, '#000000', 0.12)
+
+
+def get_theme_settings():
+    """
+    Get admin-managed theme settings as CSS-ready palette values.
+    """
+    theme_mode = get_setting('THEME_MODE', 'premium_dark')
+    preset = PRESET_THEME_PALETTES.get(theme_mode, PRESET_THEME_PALETTES['premium_dark'])
+    primary = get_setting('THEME_PRIMARY_COLOR', preset['primary']) or preset['primary']
+    accent = get_setting('THEME_ACCENT_COLOR', preset['accent']) or preset['accent']
+    use_smart_palette = get_setting('THEME_USE_SMART_PALETTE', True)
+
+    if use_smart_palette and theme_mode == 'premium_dark' and primary.upper() == '#02070F':
+        return DEFAULT_THEME.copy()
+
+    button_text = _readable_text_for(primary)
+    footer_text = '#CBD5E1' if _relative_luminance(primary) < 0.45 else '#374151'
+
+    return {
+        'primary': primary,
+        'primary_hover': _hover_for(primary),
+        'accent': accent,
+        'accent_hover': _hover_for(accent),
+        'button_bg': primary,
+        'button_text': button_text,
+        'navbar_bg': primary,
+        'navbar_text': button_text,
+        'navbar_link_hover': _mix(accent, '#FFFFFF', 0.25) if _relative_luminance(primary) < 0.45 else _hover_for(accent),
+        'footer_bg': primary,
+        'footer_text': footer_text,
+        'link_color': accent,
+        'heading_color': '#111827',
+        'body_text': '#374151',
+        'page_bg': '#F8FAFC',
+        'card_bg': '#FFFFFF',
+        'border_color': '#E5E7EB',
+    }
+
 def get_email_settings():
     """
     Get email settings from the SiteSettings model or fallback to Django settings.

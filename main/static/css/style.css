@@ -5,26 +5,63 @@
     --light: #f8f9fa;
     --dark: #343a40;
     --gray: #6c757d;
+    --wp-primary: #02070F;
+    --wp-primary-hover: #0B1220;
+    --wp-accent: #3B82F6;
+    --wp-accent-hover: #2563EB;
+    --wp-button-bg: #02070F;
+    --wp-button-text: #FFFFFF;
+    --wp-navbar-bg: #02070F;
+    --wp-navbar-text: #FFFFFF;
+    --wp-navbar-link-hover: #60A5FA;
+    --wp-footer-bg: #02070F;
+    --wp-footer-text: #CBD5E1;
+    --wp-link-color: #2563EB;
+    --wp-heading-color: #111827;
+    --wp-body-text: #374151;
+    --wp-page-bg: #F8FAFC;
+    --wp-card-bg: #FFFFFF;
+    --wp-border-color: #E5E7EB;
 }
 
 /* General Styles */
 body {
     font-family: 'Montserrat', sans-serif;
-    color: #333;
+    color: var(--wp-body-text);
+    background-color: var(--wp-page-bg);
     line-height: 1.6;
 }
 
 h1, h2, h3, h4, h5, h6 {
     font-weight: 700;
+    color: var(--wp-heading-color);
 }
 
 a {
+    color: var(--wp-link-color);
     text-decoration: none;
     transition: all 0.3s ease;
 }
 
+a:hover {
+    color: var(--wp-accent-hover);
+}
+
 .section-title {
     margin-bottom: 2rem;
+}
+
+.section-title h6,
+.text-primary {
+    color: var(--wp-accent) !important;
+}
+
+.bg-primary {
+    background-color: var(--wp-primary) !important;
+}
+
+.border-primary {
+    border-color: var(--wp-primary) !important;
 }
 
 /* Button Styles */
@@ -35,13 +72,15 @@ a {
 }
 
 .btn-primary {
-    background-color: var(--primary);
-    border-color: var(--primary);
+    background-color: var(--wp-button-bg);
+    border-color: var(--wp-button-bg);
+    color: var(--wp-button-text);
 }
 
 .btn-primary:hover {
-    background-color: #2980b9;
-    border-color: #2980b9;
+    background-color: var(--wp-primary-hover);
+    border-color: var(--wp-primary-hover);
+    color: var(--wp-button-text);
 }
 
 .btn-secondary {
@@ -56,6 +95,7 @@ a {
 
 /* Navbar Styles */
 .navbar {
+    background-color: var(--wp-navbar-bg) !important;
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     padding: 10px 0;
 }
@@ -78,20 +118,38 @@ a {
 
 .navbar-nav .nav-link {
     font-weight: 600;
-    color: var(--dark);
+    color: var(--wp-navbar-text);
     padding: 15px 20px;
 }
 
 .navbar-nav .nav-link:hover,
 .navbar-nav .nav-link.active {
-    color: var(--primary);
+    color: var(--wp-navbar-link-hover);
+}
+
+.navbar-brand h2,
+.navbar-brand .text-primary {
+    color: var(--wp-navbar-text) !important;
+}
+
+.navbar-toggler {
+    border-color: var(--wp-navbar-text);
+}
+
+.navbar-light .navbar-toggler-icon {
+    filter: invert(1) grayscale(1);
 }
 
 /* Footer Styles */
 .footer {
-    background-color: var(--dark);
-    color: var(--light);
+    background-color: var(--wp-footer-bg) !important;
+    color: var(--wp-footer-text);
     padding-top: 3rem;
+}
+
+.footer h4,
+.footer .text-light {
+    color: var(--wp-footer-text) !important;
 }
 
 .footer h4 {
@@ -100,11 +158,11 @@ a {
 }
 
 .footer a {
-    color: var(--light);
+    color: var(--wp-footer-text);
 }
 
 .footer a:hover {
-    color: var(--primary);
+    color: var(--wp-navbar-link-hover);
 }
 
 .btn-social {
@@ -126,8 +184,8 @@ a {
 
 .btn-social.btn-lg:hover {
     transform: translateY(-5px);
-    background-color: var(--primary);
-    border-color: var(--primary);
+    background-color: var(--wp-accent);
+    border-color: var(--wp-accent);
 }
 
 .social-links {
@@ -240,14 +298,14 @@ a {
 }
 
 .cta-section {
-    background-color: var(--primary);
+    background-color: var(--wp-primary);
 }
 
 /* Services Page Styles */
 .service-item {
     padding: 2rem;
     border-radius: 8px;
-    background-color: var(--light);
+    background-color: var(--wp-card-bg);
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     transition: all 0.3s ease;
     height: 100%;
@@ -284,8 +342,8 @@ a {
 .contact-info i {
     width: 45px;
     height: 45px;
-    background-color: var(--primary);
-    color: white;
+    background-color: var(--wp-primary);
+    color: var(--wp-button-text);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -294,8 +352,8 @@ a {
 }
 
 .form-control:focus {
-    border-color: var(--primary);
-    box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25);
+    border-color: var(--wp-accent);
+    box-shadow: 0 0 0 0.25rem color-mix(in srgb, var(--wp-accent) 25%, transparent);
 }
 
 /* Videos Page Styles */
@@ -308,7 +366,7 @@ a {
 
 .video-title {
     padding: 1rem;
-    background-color: var(--light);
+    background-color: var(--wp-card-bg);
 }
 
 /* Media Queries */
@@ -351,7 +409,7 @@ a {
 
 /* Appointment Page Styles */
 .appointment-form {
-    background-color: var(--light);
+    background-color: var(--wp-card-bg);
     padding: 2rem;
     border-radius: 8px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
