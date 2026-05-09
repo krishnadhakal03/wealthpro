@@ -308,7 +308,13 @@ class SiteSettingsAdmin(admin.ModelAdmin):
             'description': 'Store hours displayed on the contact page'
         }),
         ('Navigation / Disclaimer', {
-            'fields': ('show_disclaimer_bar', 'disclaimer_text', 'disclaimer_scroll_enabled', 'show_insurance_calculator_menu'),
+            'fields': (
+                'show_disclaimer_bar',
+                'disclaimer_text',
+                'disclaimer_scroll_enabled',
+                'disclaimer_scroll_speed_seconds',
+                'show_insurance_calculator_menu'
+            ),
             'description': 'Control navigation menu items and disclaimer bar display'
         }),
         ('Security Settings', {

@@ -120,7 +120,8 @@
 
     {% if site_settings.show_disclaimer_bar and site_settings.disclaimer_text %}
     <!-- Disclaimer Bar Start -->
-    <div class="site-disclaimer-bar {% if site_settings.disclaimer_scroll_enabled %}is-scrolling{% endif %}">
+    <div class="site-disclaimer-bar {% if site_settings.disclaimer_scroll_enabled %}is-scrolling{% endif %}"
+         style="--wp-disclaimer-scroll-duration: {{ site_settings.disclaimer_scroll_speed_seconds|default:20 }}s;">
         <div class="site-disclaimer-inner">
             <span>{{ site_settings.disclaimer_text }}</span>
         </div>
