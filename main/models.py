@@ -730,6 +730,16 @@ class SiteSettings(models.Model):
     business_hours_sunday = models.CharField(max_length=100, default="Closed", 
                                            help_text="Business hours for Sunday")
     
+    # Navigation / Disclaimer
+    show_disclaimer_bar = models.BooleanField(default=True, 
+                                            help_text="Show scrolling disclaimer bar below navbar")
+    disclaimer_text = models.TextField(default="This site is for educational purposes only.", 
+                                     help_text="Text to display in the disclaimer bar")
+    disclaimer_scroll_enabled = models.BooleanField(default=True, 
+                                                  help_text="Enable horizontal scrolling animation for disclaimer text")
+    show_insurance_calculator_menu = models.BooleanField(default=True, 
+                                                       help_text="Show Insurance Calculator menu item in navigation")
+    
     # Security Settings
     enable_csrf_protection = models.BooleanField(default=True, 
                                                help_text="Enable CSRF protection in production")

@@ -212,6 +212,54 @@ a:hover {
     filter: invert(1) grayscale(1);
 }
 
+/* Disclaimer Bar Styles */
+.site-disclaimer-bar {
+    background-color: var(--wp-primary);
+    color: var(--wp-footer-text);
+    border-top: 1px solid var(--wp-accent);
+    border-bottom: 1px solid var(--wp-accent);
+    height: 36px;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    position: relative;
+}
+
+.site-disclaimer-inner {
+    white-space: nowrap;
+    font-size: 0.85rem;
+    font-weight: 500;
+    padding: 0 20px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.site-disclaimer-bar.is-scrolling .site-disclaimer-inner {
+    animation: scroll-left 20s linear infinite;
+}
+
+.site-disclaimer-bar:not(.is-scrolling) .site-disclaimer-inner {
+    justify-content: center;
+    text-align: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .site-disclaimer-inner {
+        animation: none !important;
+    }
+}
+
+@keyframes scroll-left {
+    0% {
+        transform: translateX(100%);
+    }
+    100% {
+        transform: translateX(-100%);
+    }
+}
+
 /* Footer Styles */
 .footer {
     background-color: var(--wp-footer-bg) !important;

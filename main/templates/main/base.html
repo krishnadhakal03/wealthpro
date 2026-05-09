@@ -107,7 +107,9 @@
                     <a href="{% url 'services' %}" class="nav-item nav-link"><i class="fa fa-briefcase me-2"></i>Services</a>
                     <a href="{% url 'team' %}" class="nav-item nav-link"><i class="fa fa-users me-2"></i>Our Team</a>
                     <a href="{% url 'videos' %}" class="nav-item nav-link"><i class="fa fa-video me-2"></i>Videos</a>
+                    {% if site_settings.show_insurance_calculator_menu %}
                     <a href="{% url 'insurance_calculator' %}" class="nav-item nav-link"><i class="fa fa-calculator me-2"></i>Insurance Calculator</a>
+                    {% endif %}
                     <a href="{% url 'appointment' %}" class="nav-item nav-link"><i class="fa fa-calendar me-2"></i>Appointment</a>
                     <a href="{% url 'contact' %}" class="nav-item nav-link"><i class="fa fa-envelope me-2"></i>Contact</a>
                 </div>
@@ -115,6 +117,16 @@
         </div>
     </nav>
     <!-- Navbar End -->
+
+    {% if site_settings.show_disclaimer_bar and site_settings.disclaimer_text %}
+    <!-- Disclaimer Bar Start -->
+    <div class="site-disclaimer-bar {% if site_settings.disclaimer_scroll_enabled %}is-scrolling{% endif %}">
+        <div class="site-disclaimer-inner">
+            <span>{{ site_settings.disclaimer_text }}</span>
+        </div>
+    </div>
+    <!-- Disclaimer Bar End -->
+    {% endif %}
 
     {% block hero %}{% endblock %}
 

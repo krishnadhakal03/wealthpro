@@ -307,6 +307,10 @@ class SiteSettingsAdmin(admin.ModelAdmin):
             'fields': ('business_hours_weekdays', 'business_hours_saturday', 'business_hours_sunday'),
             'description': 'Store hours displayed on the contact page'
         }),
+        ('Navigation / Disclaimer', {
+            'fields': ('show_disclaimer_bar', 'disclaimer_text', 'disclaimer_scroll_enabled', 'show_insurance_calculator_menu'),
+            'description': 'Control navigation menu items and disclaimer bar display'
+        }),
         ('Security Settings', {
             'fields': ('enable_csrf_protection', 'enable_secure_cookies', 'enable_ssl_redirect'),
             'classes': ('collapse',),

@@ -95,6 +95,12 @@ class SettingsRegistry:
             settings_dict['THEME_PREVIOUS_PALETTE_SAVED_AT'] = site_settings.theme_previous_palette_saved_at
             settings_dict['THEME_UPDATED_AT'] = site_settings.theme_updated_at
             
+            # Navigation / Disclaimer
+            settings_dict['SHOW_DISCLAIMER_BAR'] = site_settings.show_disclaimer_bar
+            settings_dict['DISCLAIMER_TEXT'] = site_settings.disclaimer_text
+            settings_dict['DISCLAIMER_SCROLL_ENABLED'] = site_settings.disclaimer_scroll_enabled
+            settings_dict['SHOW_INSURANCE_CALCULATOR_MENU'] = site_settings.show_insurance_calculator_menu
+            
             # Company info
             settings_dict['ESTABLISHED_YEAR'] = site_settings.established_year
             
