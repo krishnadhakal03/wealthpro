@@ -315,7 +315,7 @@ a:hover {
     position: relative;
 }
 
-.hero-header::after {
+.hero-header h1::after {
     content: "";
     display: block;
     width: 72px;
