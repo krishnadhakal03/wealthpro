@@ -400,6 +400,9 @@ class SiteColorBrandingAdmin(admin.ModelAdmin):
         'theme_updated_at',
     )
 
+    class Media:
+        js = ('js/site_color_branding_admin.js',)
+
     def has_add_permission(self, request):
         return not SiteSettings.objects.exists()
 

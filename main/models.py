@@ -587,6 +587,13 @@ class SiteSettings(models.Model):
         'theme_accent_color',
         'theme_use_smart_palette',
     ]
+    THEME_PRESET_COLORS = {
+        'default_blue': {'primary': '#0D6EFD', 'accent': '#38BDF8'},
+        'premium_dark': {'primary': '#02070F', 'accent': '#3B82F6'},
+        'trust_navy': {'primary': '#0B1F3A', 'accent': '#2F80ED'},
+        'modern_teal': {'primary': '#0F3D3E', 'accent': '#2DD4BF'},
+        'executive_gold': {'primary': '#111827', 'accent': '#D4AF37'},
+    }
 
     site_name = models.CharField(max_length=200, default="Next Generation Wealth Pro")
     site_tagline = models.CharField(max_length=200, default="Wealth Management")
@@ -749,6 +756,11 @@ class SiteSettings(models.Model):
 
     def clean(self):
         super().clean()
+        if self.theme_use_smart_palette and self.theme_mode in self.THEME_PRESET_COLORS:
+            preset = self.THEME_PRESET_COLORS[self.theme_mode]
+            self.theme_primary_color = preset['primary']
+            self.theme_accent_color = preset['accent']
+
         errors = {}
         try:
             self.theme_primary_color = self.normalize_hex_color(self.theme_primary_color)
